@@ -1,0 +1,66 @@
+[Black & White]
+R=(R+G+B)/3
+G=(R+G+B)/3
+B=(R+G+B)/3
+
+[Invert]
+R=255-R
+G=255-G
+B=255-B
+
+[Swap Red / Green]
+R=G
+G=R
+
+[Swap  Green / Blue]
+B=G
+G=B
+
+[Swap Red / Blue]
+R=B
+B=R
+
+[Test]
+R=R/2+B/2
+G=G/2+B/2
+
+[Lighter]
+R=R+R/4
+G=G+G/5
+B=B+B/6
+
+[Less color]
+R=(R+R+R+R+G+B)/6
+G=(G+G+G+R+G+B)/6
+B=(B+B+B+R+G+B)/6
+
+[Less color 2]
+R=(R+R+R+R+R+R+G+B)/8
+G=(G+G+G+G+G+R+G+B)/8
+B=(B+B+B+B+B+R+G+B)/8
+
+[Contrast]
+R=(R+R+R+R)/3
+G=(G+G+G+G)/3
+B=(B+B+B+B)/3
+
+[Less Contrast]
+R=(R+R+R+R)/5
+G=(G+G+G+G)/5
+B=(B+B+B+B)/5
+
+[AddRGB]
+R=R+B+G
+G=R+B+G
+B=R+B+G
+
+[Sepia]
+R=R+(R+G+B)/10
+G=G+(R+G+B)/20
+B=B
+
+[Darker]
+R=(R+R+R+R)/5
+G=(G+G+G+G)/5
+B=(B+B+B+B)/5
+

@@ -1,0 +1,36 @@
+; --------------------------------------------------------
+; Tile Studio Definition file for use with BlitzMax
+; (http://www.blitzbasic.com/)
+;
+; Version 1.0 - October 16, 2004
+; Mike Wiering (mike@wieringsoftware.nl)
+; --------------------------------------------------------
+
+#file <ProjectName>TileData.bmx
+
+#tileset
+Global <TileSetIdentifier>_TILE_COUNT: Int = <TSTileCount>;
+Global <TileSetIdentifier>_TILE_WIDTH: Int = <TileWidth>;
+Global <TileSetIdentifier>_TILE_HEIGHT: Int = <TileHeight>;
+
+#tstile "\n"
+##<TileSetIdentifier>_TILE_<TileNumber+1>
+#tiledata "\nDefData "  ","  "\nDefData "  "\nDefData "  ""  " $00000000"
+ $<B+(G shl 8)+(R shl 16)+0xFF000000:"%08x">
+#end tiledata
+
+#end tstile
+
+#map
+Global <TileSetIdentifier>_<MapIdentifier>_WIDTH: Int = <MapWidth>
+Global <TileSetIdentifier>_<MapIdentifier>_HEIGHT: Int = <MapHeight>
+
+##<TileSetIdentifier>_<MapIdentifier>
+#mapdata "\nDefData "  ","  "\nDefData "  "\nDefData "  ""
+<TSMidTile>
+#end mapdata
+#end map
+
+#end tileset
+
+#end file

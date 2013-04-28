@@ -1,0 +1,51 @@
+
+#file test.txt
+start
+#list "MyNumbers" "\n(" " sep1 " "" ")"
+<Item> (Counter: <Counter0>)
+
+#list "MyStrings" " {1}(" " {1}\n " "" "){1}"
+  <Index>: <Item>
+#end list
+
+#list "MyStrings" " {2}(" ",{2}\n " "" "){2}"
+  <Index>: <Item>
+#end list
+
+#end list
+
+#list "FileList" "\n" "\n"
+#readtextfile <Item> "\n(" "_" ")\n"
+<TextFileLine> (Counter: <Counter0>)
+#end readtextfile
+#end list
+
+#readtextfile "d:\\owner.txt" "\n(" "__" "-\n" ")\n"
+<TextFileLine>
+#end readtextfile
+
+recursive:
+#list "MyNumbers" "\n(" "," "" ")"
+#list "MyNumbers" "\n(" "," "" ")"
+<MyNumbersItem0><MyNumbersItem1> (<MyNumbersItemValue0 + MyNumbersItemValue1>) (Counter: <Counter0>) 
+#end list
+#end list
+
+end
+
+a
+
+#readbinfile "d:\\owner.txt" "(" "," ",\n" ")"
+<if (BinFileByte below 32) then 0 else BinFileByte>
+#end readbinfile
+
+#tileset
+#tstile ","
+<TileNumber>
+#end tstile
+#end tileset
+
+
+#end file
+
+

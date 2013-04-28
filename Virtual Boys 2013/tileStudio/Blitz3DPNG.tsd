@@ -1,0 +1,34 @@
+; --------------------------------------------------------
+; Tile Studio Definition file for use with Blitz3D
+; (http://www.blitzbasic.com/)
+;
+; Version 1.0 - October 16, 2004
+; Mike Wiering (mike@wieringsoftware.nl)
+; --------------------------------------------------------
+
+#tileset
+#tilebitmap <ProjectName><TileSetIdentifier>.PNG 512
+#end tilebitmap
+#end tileset
+
+#file <ProjectName>TileData.bb
+
+#tileset
+Const <TileSetIdentifier>_TILE_COUNT = <TileCount>
+Const <TileSetIdentifier>_TILE_WIDTH = <TileWidth>
+Const <TileSetIdentifier>_TILE_HEIGHT = <TileHeight>
+
+#map
+Const <TileSetIdentifier><MapIdentifier>_MAP_WIDTH = <MapWidth>
+Const <TileSetIdentifier><MapIdentifier>_MAP_HEIGHT = <MapHeight>
+
+.<TileSetIdentifier><MapIdentifier>Map
+#mapdata  "\nData "  ","  "\nData "  "\nData "  ""
+<TileNumber>
+#end mapdata
+
+#end map
+
+#end tileset
+
+#end file
