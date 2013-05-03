@@ -6,3 +6,4 @@ Level creation to be done in Tile Studio by blocking out segements of levels and
 
 Audio to use .nsf for looping 8-bit audio. sfxr for sound effects.
 
+http://xnasfxrsynth.codeplex.com/ - xna sfxr port
