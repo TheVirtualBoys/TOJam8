@@ -12,11 +12,22 @@ namespace WindowsGame1
 {
 	public class TileSet
 	{
+		public enum Bounds
+		{
+			BOUNDS_NONE		= 0,
+			BOUNDS_TOP		= 1 << 0,
+			BOUNDS_LEFT		= 1 << 1,
+			BOUNDS_BOTTOM	= 1 << 2,
+			BOUNDS_RIGHT	= 1 << 3,
+			BOUNDS_SLASH	= -128,
+			BOUNDS_BSLASH	= -128 | 1 << 0
+		}
 		public string name;
 		public Texture2D texture;
 		public int width;
 		public int height;
 		public int count;
+		public Dictionary<int, Bounds> bounds = new Dictionary<int, Bounds>();	// tile index, bounds value
 		public List<Rectangle> coords = new List<Rectangle>();
 	};
 
@@ -29,13 +40,12 @@ namespace WindowsGame1
 		public int[][] data;
 	};
 
-	public class GameData// : Microsoft.Xna.Framework.Game
+	public class GameData
 	{
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
 		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
-
-
+		
 		public GameData()
 		{
 		}
@@ -49,10 +59,13 @@ namespace WindowsGame1
 		public void init(ContentManager content)
 		{
 			XElement gameData = XElement.Load("Content/steve.xml", LoadOptions.None);
+			/**
+			 * Load Tileset data
+			 */
 			foreach (XElement set in gameData.Element("tilesets").Elements("tileset")) {
 				TileSet s	= new TileSet();
 				s.name		= (string)set.Attribute("name");
-				s.texture	= content.Load<Texture2D>((string)set.Attribute("fileName"));
+				s.texture	= content.Load<Texture2D>(s.name);//(string)set.Attribute("fileName"));
 				s.width		= (int)set.Attribute("TileWidth");
 				s.height	= (int)set.Attribute("TileHeight");
 				int hCount	= (int)set.Attribute("HorizontalTileCount");
@@ -73,6 +86,9 @@ namespace WindowsGame1
 
 				Debug.Print("Added Tileset: " + s.name);
 			}
+			/**
+			 * Load Map and tile bounds data
+			 */
 			foreach (XElement map in gameData.Element("maps").Elements("map")) {
 				Map m			= new Map();
 				m.name			= (string)map.Attribute("name");
@@ -85,20 +101,48 @@ namespace WindowsGame1
 					m.data[i] = new int[m.width];
 				}
 				char[] split	= new char[] {',', '\r', '\n'};
-				string[] values	= map.Value.Split(split, StringSplitOptions.RemoveEmptyEntries);
+				string[] values = map.Element("mapdata").Value.Split(split, StringSplitOptions.RemoveEmptyEntries);
+				string[] bounds = map.Element("bounds").Value.Split(split, StringSplitOptions.RemoveEmptyEntries);
+				TileSet tileset = getTileSet(m.tileset);
+
 				int k = 0;
 				for (int i = 0; i < m.height; i++) {
 					//String dbg = "";
 					for (int j = 0; j < m.width; j++) {
 						int val = Convert.ToInt32(values[k]);
+						int bound = Convert.ToInt16(bounds[k]);
+						tileset.bounds[val] = (TileSet.Bounds)bound;
 						m.data[i][j] = val;
-						//dbg += val.ToString() + ", ";
 						k++;
+						//dbg += val.ToString() + ", ";
 					}
 					//Debug.Print(dbg);
 				}
 				maps.Add(m);
 			}
 		} // init()
+
+		public TileSet getTileSet(string tileSetName)
+		{
+			int index = getTileSetIndex(tileSetName);
+			return (index >= 0) ? tileSets[index] : null;
+		}
+
+		/**
+		 * Gets the tileset index from the tilename.
+		 * Returns -1 if nothing was found.
+		 */
+		public int getTileSetIndex(string tileSetName)
+		{
+			int outIndex = -1;
+			if (!tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
+			{
+				System.Console.Error.WriteLine("Couldn't find the tileset: " + tileSetName);
+			}
+
+			return outIndex;
+		}
+
+		
 	}; // GameData
 } // namespace

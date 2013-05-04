@@ -1,36 +1,45 @@
 ; --- bitmap file ----------------------------------------
 
 #tileset
-#tilebitmap gfx/<TileSetIdentifier>.BMP 320
+#tilebitmap WindowsGame1/WindowsGame1/WindowsGame1Content/<TileSetIdentifier>.bmp 320
 #end tilebitmap
 #end tileset
 
 ; --------------------------------------------------------
 
-#file<ProjectName>.xml
+#file WindowsGame1/WindowsGame1/WindowsGame1Content/<ProjectName>.xml
 \<data\>
 \<tilesets\>
 #tileset
-\<tileset name = "<TileSetIdentifier>" fileName = "<TileSetIdentifier>.BMP" 
+\<tileset name = "<TileSetIdentifier>" fileName = "<TileSetIdentifier>.bmp" 
 	TileWidth = "<TileWidth>" TileHeight = "<TileHeight>"
 	HorizontalTileCount = "<HorizontalTileCount>" VerticalTileCount = "<VerticalTileCount>"
 	TileCount = "<TileCount>"/\>
 \</tilesets\>
+
 \<sequences\>
 #sequence
 \<sequence spriteNumber="<SpriteNumber>" sequenceNumber="<SequenceNumber>" sequenceLength="<SequenceLength>" \>
 #sequencedata
-\<sequencedata frame="<Frame>" length="<FrameCount>" /\>
+\<sequencedata frame="<Frame>" length="<FrameCount>" bounds="<Bounds>" /\>
 #end sequencedata
 \</sequence\>
 \</sequences\>
-\<maps\>
 #end sequence
+
+\<maps\>
 #map
 \<map name = "<MapIdentifier>" tileset = "<TileSetIdentifier>" height = "<MapHeight>" width = "<MapWidth>"\>
-#mapdata  "\n  "  ","  ",\n   "  ",\n  "  ""
-<TileNumber:"%2d">
+\<mapdata\>
+#mapdata  "\n"  ","  ","  ",\n"  ""
+<TileNumber:"%4d">
 #end mapdata
+\</mapdata\>
+\<bounds\>
+#mapdata  "\n"  ","  ","  ",\n"  ""
+<BoundMapValue:"%4d">
+#end mapdata
+\</bounds\>
 \</map\>
 #end map
 \</maps\>
