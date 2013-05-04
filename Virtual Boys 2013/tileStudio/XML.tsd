@@ -8,15 +8,24 @@
 ; --------------------------------------------------------
 
 #file<ProjectName>.xml
-<data>
-<tilesets>
+\<data\>
+\<tilesets\>
 #tileset
 \<tileset name = "<TileSetIdentifier>" fileName = "<TileSetIdentifier>.BMP" 
 	TileWidth = "<TileWidth>" TileHeight = "<TileHeight>"
 	HorizontalTileCount = "<HorizontalTileCount>" VerticalTileCount = "<VerticalTileCount>"
 	TileCount = "<TileCount>"/\>
-</tilesets>
-<maps>
+\</tilesets\>
+\<sequences\>
+#sequence
+\<sequence spriteNumber="<SpriteNumber>" sequenceNumber="<SequenceNumber>" sequenceLength="<SequenceLength>" \>
+#sequencedata
+\<sequencedata frame="<Frame>" length="<FrameCount>" /\>
+#end sequencedata
+\</sequence\>
+\</sequences\>
+\<maps\>
+#end sequence
 #map
 \<map name = "<MapIdentifier>" tileset = "<TileSetIdentifier>" height = "<MapHeight>" width = "<MapWidth>"\>
 #mapdata  "\n  "  ","  ",\n   "  ",\n  "  ""
@@ -24,8 +33,8 @@
 #end mapdata
 \</map\>
 #end map
-</maps>
+\</maps\>
 
 #end tileset
-</data>
+\</data\>
 #end file

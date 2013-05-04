@@ -51,6 +51,8 @@ namespace WindowsGame1
 		{
 			// TODO: Add your initialization logic here
 			audioSys.init();
+			audioSys.loadNSF("Content/cv3.nsf");
+			audioSys.play();
 			gameData.init(Content);
 			base.Initialize();
 		}
