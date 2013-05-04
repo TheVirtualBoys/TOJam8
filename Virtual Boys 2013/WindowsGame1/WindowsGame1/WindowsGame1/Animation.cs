@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WindowsGame1
 {
-	class Animation
+	public class Animation
 	{
 		int loopCount;
 		List<Frame> frames;
