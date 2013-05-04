@@ -35,10 +35,17 @@ namespace WindowsGame1
 		private int numScreenTilesWide;
 		private int numScreenTilesHigh;
 
+		private const int tileWidth = 16;
+		private const int tileHeight = 16;
+
+		private int pixelShiftSize;
+
 		/**
 		 * The tile column offset into the current tileset
 		 */
 		int startingTileOffset;
+
+		int startingPixelOffset;
 
 		/**
 		 * The first map that is shown on the screen
@@ -49,6 +56,8 @@ namespace WindowsGame1
 		 * The second map that is shown beside the first map
 		 */
 		int secondMap;
+
+		KeyboardState oldKeyState;
 
 
 		public Game1()
@@ -61,8 +70,8 @@ namespace WindowsGame1
 			audioSys = new AudioSys();
 			gameData = new GameData();
 
-			numScreenTilesWide = graphics.PreferredBackBufferWidth / 16;
-			numScreenTilesHigh = graphics.PreferredBackBufferHeight / 16;
+			numScreenTilesWide = graphics.PreferredBackBufferWidth / tileWidth;
+			numScreenTilesHigh = graphics.PreferredBackBufferHeight / tileHeight;
 		}
 
 		/// <summary>
@@ -80,10 +89,15 @@ namespace WindowsGame1
 			gameData.init(Content);
 			base.Initialize();
 
+			oldKeyState = Keyboard.GetState();
+
 			startingTileOffset = 0;
+			startingPixelOffset = 0;
 
 			firstMap = MAPS_FOREGROUND;
 			secondMap = MAPS_FOREGROUND;
+
+			pixelShiftSize = 2;
 		}
 
 		/// <summary>
@@ -108,7 +122,6 @@ namespace WindowsGame1
 			// TODO: Unload any non ContentManager content here
 		}
 
-		int frameCount;
 		/// <summary>
 		/// Allows the game to run logic such as updating the world,
 		/// checking for collisions, gathering input, and playing audio.
@@ -124,11 +137,43 @@ namespace WindowsGame1
 
 			base.Update(gameTime);
 
-			++frameCount;
-			if (frameCount % 10 == 0)
+			UpdateInput();
+
+			//moves the map by 'pixelShiftSize' pixels. to speed up or slow down, call incPixelShiftSize
+			moveRightByPixels(pixelShiftSize);
+		}
+
+		private void UpdateInput()
+		{
+			KeyboardState newKeyState = Keyboard.GetState();
+
+			if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
+				incPixelShiftSize(-1);
+			else if (GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
+				incPixelShiftSize(1);
+			else if (newKeyState.IsKeyDown(Keys.Left) && !oldKeyState.IsKeyDown(Keys.Left))
 			{
-				moveRight(1);
+				//left key was pressed
+				incPixelShiftSize(-1);
 			}
+			else if (newKeyState.IsKeyDown(Keys.Right) && !oldKeyState.IsKeyDown(Keys.Right))
+			{
+				//right key was pressed
+				incPixelShiftSize(1);
+			}
+
+			oldKeyState = newKeyState;
+		}
+
+		/**
+		 * Changes the pixel shift size by 'inc' (either + or -).
+		 * This makes the map scroll by faster or slower
+		 */
+		private void incPixelShiftSize(int inc)
+		{
+			pixelShiftSize += inc;
+			if (pixelShiftSize < 0)
+				pixelShiftSize = 0;
 		}
 
 		/// <summary>
@@ -146,7 +191,7 @@ namespace WindowsGame1
 			if (tileSetIndex >= 0)
 			{
 				int numRows = numScreenTilesHigh;
-				int numCols = numScreenTilesWide;
+				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
 				for (int row = 0; row < numRows; ++row)
 				{
 					for (int col = 0; col < numCols; ++col)
@@ -160,7 +205,7 @@ namespace WindowsGame1
 
 						Rectangle dims = tileSet.coords[tileSetRectIndex];
 						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
+						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
 					}
 				}
 			}
@@ -220,7 +265,20 @@ namespace WindowsGame1
 			return index;
 		}
 
-		public void moveRight(int numTiles)
+		public void moveRightByPixels(int numPixels)
+		{
+			startingPixelOffset += numPixels;
+
+			if (startingPixelOffset >= tileWidth)
+			{
+				int numTiles = startingPixelOffset / tileWidth;
+				startingPixelOffset = startingPixelOffset % tileWidth;
+
+				moveRightByTiles(numTiles);
+			}
+		}
+
+		public void moveRightByTiles(int numTiles)
 		{
 			startingTileOffset += numTiles;
 
