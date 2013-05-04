@@ -87,7 +87,7 @@
 </maps>
 
 	<animations>
-		<animation loop="true">
+		<animation loopCount="-1">
 			<frame frameTime="33">
 				<component tileset="Tiles" left="0" top="0">0</component>
 			</frame>

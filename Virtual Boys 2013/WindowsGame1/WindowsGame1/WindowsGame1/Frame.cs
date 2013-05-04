@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WindowsGame1
 {
-	class Frame
+	public class Frame
 	{
 		int frameTime;
 

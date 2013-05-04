@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace WindowsGame1
 {
-	class FrameComponent
+	public class FrameComponent
 	{
 		int tileSetIndex;
 

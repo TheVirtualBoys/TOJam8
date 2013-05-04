@@ -45,7 +45,8 @@ namespace WindowsGame1
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
 		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
-		
+		public List<Animation> animations = new List<Animation>();
+
 		public GameData()
 		{
 		}
@@ -120,7 +121,63 @@ namespace WindowsGame1
 				}
 				maps.Add(m);
 			}
+
+			animations = getAnimations(gameData.Element("animations"));
+			//set up the animations from the data file
+
 		} // init()
+
+		private List<Animation> getAnimations(XElement animationsData)
+		{
+			List<Animation> animations = new List<Animation>();
+			foreach (XElement animationData in animationsData.Elements("animation"))
+			{
+				int loopCount = (int)animationData.Attribute("loopCount");
+				List<Frame> frames = getFrames(animationData);
+
+				Animation animation = new Animation(loopCount, frames);
+				animations.Add(animation);
+			}
+			return animations;
+		}
+
+		private List<Frame> getFrames(XElement animationData)
+		{
+			List<Frame> frames = new List<Frame>();
+			foreach (XElement frameData in animationData.Elements("frame"))
+			{
+				int frameTime = (int)frameData.Attribute("frameTime");
+
+				//go through all the component xml data in the frame and create a list of of the components
+				List<FrameComponent> components = getFrameComponents(frameData);
+
+				Frame frame = new Frame(frameTime, components);
+				frames.Add(frame);
+			}
+			return frames;
+		}
+
+		private List<FrameComponent> getFrameComponents(XElement frameData)
+		{
+			List<FrameComponent> frameComponents = new List<FrameComponent>();
+			foreach (XElement componentData in frameData.Elements("component"))
+			{
+				string tileSetName = (string)componentData.Attribute("tileset");
+				int leftOffset = (int)componentData.Attribute("left");
+				int topOffset = (int)componentData.Attribute("top");
+				int rectIndex = Convert.ToInt32(componentData.Value);
+
+				int tileSetIndex;
+				if (!tileSetNameIdMap.TryGetValue(tileSetName, out tileSetIndex))
+				{
+					System.Console.Error.WriteLine("Couldn't find the tileset index for: " + tileSetName);
+				}
+
+				FrameComponent frameComponent = new FrameComponent(tileSetIndex, rectIndex, leftOffset, topOffset);
+				frameComponents.Add(frameComponent);
+			}
+			return frameComponents;
+		}
 
 		public TileSet getTileSet(string tileSetName)
 		{
