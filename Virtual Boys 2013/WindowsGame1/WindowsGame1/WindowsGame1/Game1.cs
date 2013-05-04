@@ -84,8 +84,8 @@ namespace WindowsGame1
 		{
 			// TODO: Add your initialization logic here
 			audioSys.init();
-//			audioSys.loadNSF("Content/cv3.nsf");
-//			audioSys.play();
+			audioSys.loadNSF("Content/cv3.nsf");
+			audioSys.play();
 			gameData.init(Content);
 			base.Initialize();
 
@@ -110,8 +110,8 @@ namespace WindowsGame1
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
-			audioSys.loadNSF("Content/cv3.nsf");
-			audioSys.play();
+			//audioSys.loadNSF("Content/cv3.nsf");
+			//audioSys.play();
 		}
 
 		/// <summary>
@@ -168,7 +168,10 @@ namespace WindowsGame1
 				//right key was pressed
 				incPixelShiftSize(1);
 			}
-
+			else if (newKeyState.IsKeyDown(Keys.Up) && !oldKeyState.IsKeyDown(Keys.Up))
+			{
+				audioSys.playSFX(AudioSys.Effect.SFX_LAND);
+			}
 			oldKeyState = newKeyState;
 		}
 
