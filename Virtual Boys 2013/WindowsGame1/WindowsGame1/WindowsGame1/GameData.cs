@@ -45,7 +45,7 @@ namespace WindowsGame1
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
 		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
-		public List<Animation> animations = new List<Animation>();
+		public List<AnimationData> animations = new List<AnimationData>();
 
 		public List<Sprite> sprites = new List<Sprite>();
 
@@ -133,15 +133,15 @@ namespace WindowsGame1
 
 		} // init()
 
-		private List<Animation> getAnimations(XElement animationsData)
+		private List<AnimationData> getAnimations(XElement animationsData)
 		{
-			List<Animation> animations = new List<Animation>();
+			List<AnimationData> animations = new List<AnimationData>();
 			foreach (XElement animationData in animationsData.Elements("animation"))
 			{
 				int loopCount = (int)animationData.Attribute("loopCount");
 				List<Frame> frames = getFrames(animationData);
 
-				Animation animation = new Animation(loopCount, frames);
+				AnimationData animation = new AnimationData(loopCount, frames);
 				animations.Add(animation);
 			}
 			return animations;

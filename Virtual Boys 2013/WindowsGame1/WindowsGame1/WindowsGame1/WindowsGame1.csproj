@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="AudioSys.cs" />
     <Compile Include="Animation.cs" />
+    <Compile Include="AnimationData.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="FrameComponent.cs" />

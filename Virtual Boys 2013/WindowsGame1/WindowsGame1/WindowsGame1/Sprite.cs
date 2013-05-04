@@ -20,6 +20,14 @@ namespace WindowsGame1
 			top = 0;
 		}
 
+		public Sprite(AnimationData aniData)
+		{
+			this.ani = new Animation(aniData);
+
+			left = 0;
+			top = 0;
+		}
+
 		public int Left
 		{
 			get { return left; }
