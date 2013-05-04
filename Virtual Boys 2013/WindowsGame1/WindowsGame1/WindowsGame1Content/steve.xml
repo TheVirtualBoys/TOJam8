@@ -41,4 +41,15 @@
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		</map>
 	</maps>
+
+	<animations>
+		<animation loop="true">
+			<frame frameTime="33">
+				<component tileset="Tiles" left="0" top="0">0</component>
+			</frame>
+			<frame frameTime="33">
+				<component tileset="Tiles" left="0" top="0">1</component>
+			</frame>
+		</animation>
+	</animations>
 </data>
