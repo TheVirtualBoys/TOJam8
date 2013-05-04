@@ -9,52 +9,22 @@ namespace WindowsGame1
 	public class Animation
 	{
 		int loopCount;
-		List<Frame> frames;
+
+		AnimationData aniData;
 
 		int curFrameIndex;
-
-		int posLeft;
-		int posTop;
 
 		/**
 		 * The already used time of the current frame
 		 */
 		long curFrameTime;
 
-
-		public Animation()
+		public Animation(AnimationData aniData)
 		{
-			loopCount = 0;
-			frames = new List<Frame>();
+			this.aniData = aniData;
 
+			loopCount = this.aniData.LoopCount;
 			curFrameIndex = -1;
-			posLeft = 0;
-			posTop = 0;
-
-			curFrameTime = 0;
-		}
-
-		public Animation(int loopCount)
-		{
-			this.loopCount = loopCount;
-			frames = new List<Frame>();
-
-			curFrameIndex = -1;
-			posLeft = 0;
-			posTop = 0;
-
-			curFrameTime = 0;
-		}
-
-		public Animation(int loopCount, List<Frame> frames)
-		{
-			this.loopCount = loopCount;
-			this.frames = frames;
-
-			curFrameIndex = -1;
-			posLeft = 0;
-			posTop = 0;
-
 			curFrameTime = 0;
 		}
 
@@ -71,26 +41,12 @@ namespace WindowsGame1
 
 		public Frame getFrame(int index)
 		{
-			return frames[index];
+			return aniData.getFrame(index);
 		}
 
 		public int NumFrames
 		{
-			get { return frames.Count; }
-		}
-
-		public void addFrame(Frame frame)
-		{
-			frames.Add(frame);
-		}
-
-		public void insertFrame(Frame frame, int index)
-		{
-			if (index < 0)
-				index = 0;
-			if (index > frames.Count)
-				index = frames.Count;
-			frames.Insert(index, frame);
+			get { return aniData.NumFrames; }
 		}
 
 		public int CurFrameIndex
@@ -100,24 +56,12 @@ namespace WindowsGame1
 
 		public Frame CurFrame
 		{
-			get { return (curFrameIndex >= 0 && curFrameIndex < frames.Count)? frames[curFrameIndex] : null; }
-		}
-
-		public int Left
-		{
-			get { return posLeft; }
-			set { posLeft = value; }
-		}
-
-		public int Top
-		{
-			get { return posTop; }
-			set { posTop = value; }
+			get { return (curFrameIndex >= 0 && curFrameIndex < aniData.NumFrames)? aniData.getFrame(curFrameIndex) : null; }
 		}
 
 		public bool IsFinished
 		{
-			get { return curFrameIndex > frames.Count; }
+			get { return curFrameIndex > aniData.NumFrames; }
 		}
 
 		public bool IsStarted
@@ -155,7 +99,7 @@ namespace WindowsGame1
 			curFrameTime -= CurFrame.FrameTime;
 			curFrameIndex += 1;
 
-			if (curFrameIndex >= frames.Count)
+			if (curFrameIndex >= aniData.NumFrames)
 			{
 				if (IsLooping)
 				{
@@ -166,7 +110,7 @@ namespace WindowsGame1
 				else
 				{
 					//not looping and we've gone past the last frame, so set finished
-					curFrameIndex = frames.Count;
+					curFrameIndex = aniData.NumFrames;
 					curFrameTime = 0;
 				}
 			}
@@ -176,8 +120,8 @@ namespace WindowsGame1
 		{
 			if (index < 0)
 				index = 0;
-			if (index >= frames.Count)
-				index = frames.Count;
+			if (index >= aniData.NumFrames)
+				index = aniData.NumFrames;
 
 			curFrameTime = 0;
 			curFrameIndex = index;

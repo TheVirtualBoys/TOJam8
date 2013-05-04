@@ -45,7 +45,7 @@ namespace WindowsGame1
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
 		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
-		public List<Animation> animations = new List<Animation>();
+		public List<AnimationData> animations = new List<AnimationData>();
 
 		public List<Sprite> sprites = new List<Sprite>();
 
@@ -69,30 +69,8 @@ namespace WindowsGame1
 			/**
 			 * Load Tileset data
 			 */
-			foreach (XElement set in gameData.Element("tilesets").Elements("tileset")) {
-				TileSet s	= new TileSet();
-				s.name		= (string)set.Attribute("name");
-				s.texture	= content.Load<Texture2D>(s.name);//(string)set.Attribute("fileName"));
-				s.width		= (int)set.Attribute("TileWidth");
-				s.height	= (int)set.Attribute("TileHeight");
-				int hCount	= (int)set.Attribute("HorizontalTileCount");
-				int vCount	= (int)set.Attribute("VerticalTileCount");
-				s.count		= (int)set.Attribute("TileCount");
-				int k = 0;
-				for (int i = 0; i < hCount; i++) {
-					for (int j = 0; j < vCount; j++) {
-						if (k++ > s.count) break;
-						s.coords.Add(new Rectangle(i * s.width, j * s.height, s.width, s.height));
-					}
-				}
-				tileSets.Add(s);
+			addTileSets(content, gameData.Element("tilesets"));
 
-				//add the tileset to the name -> index map with its index within the tileSets list
-				int tileSetIndex = tileSets.IndexOf(s);
-				tileSetNameIdMap.Add(s.name, tileSetIndex);
-
-				Debug.Print("Added Tileset: " + s.name);
-			}
 			/**
 			 * Load Map and tile bounds data
 			 */
@@ -128,20 +106,73 @@ namespace WindowsGame1
 				maps.Add(m);
 			}
 
-			animations = getAnimations(gameData.Element("animations"));
-			//set up the animations from the data file
+			XElement aniDataElement = XElement.Load("Content/sprites.xml", LoadOptions.None);
+			addTileSets(content, aniDataElement.Element("tilesets"));
+			addAnimations(content, gameData.Element("animations"));
 
 		} // init()
 
-		private List<Animation> getAnimations(XElement animationsData)
+		private void addTileSets(ContentManager content, XElement tileSetsElement)
 		{
-			List<Animation> animations = new List<Animation>();
+			//get the new tilesets from the xml element
+			List<TileSet> newTileSets = getTileSets(content, tileSetsElement);
+
+			//add all of the new tiles to the list
+			this.tileSets.AddRange(newTileSets);
+
+			//add all of the new tiles to the name->index map
+			foreach (TileSet tileSet in newTileSets)
+			{
+				//add the tileset to the name -> index map with its index within the tileSets list
+				int tileSetIndex = tileSets.IndexOf(tileSet);
+				tileSetNameIdMap.Add(tileSet.name, tileSetIndex);
+			}
+		}
+
+		private List<TileSet> getTileSets(ContentManager content, XElement tileSetsElement)
+		{
+			List<TileSet> tileSets = new List<TileSet>();
+			foreach (XElement set in tileSetsElement.Elements("tileset"))
+			{
+				TileSet s = new TileSet();
+				s.name = (string)set.Attribute("name");
+				s.texture = content.Load<Texture2D>(s.name);//(string)set.Attribute("fileName"));
+				s.width = (int)set.Attribute("TileWidth");
+				s.height = (int)set.Attribute("TileHeight");
+				int hCount = (int)set.Attribute("HorizontalTileCount");
+				int vCount = (int)set.Attribute("VerticalTileCount");
+				s.count = (int)set.Attribute("TileCount");
+				int k = 0;
+				for (int i = 0; i < hCount; i++)
+				{
+					for (int j = 0; j < vCount; j++)
+					{
+						if (k++ > s.count) break;
+						s.coords.Add(new Rectangle(i * s.width, j * s.height, s.width, s.height));
+					}
+				}
+				tileSets.Add(s);
+
+				Debug.Print("Added Tileset: " + s.name);
+			}
+			return tileSets;
+		}
+
+		private void addAnimations(ContentManager content, XElement animationsElement)
+		{
+			List<AnimationData> anis = getAnimations(animationsElement);
+			animations.AddRange(anis);
+		}
+
+		private List<AnimationData> getAnimations(XElement animationsData)
+		{
+			List<AnimationData> animations = new List<AnimationData>();
 			foreach (XElement animationData in animationsData.Elements("animation"))
 			{
 				int loopCount = (int)animationData.Attribute("loopCount");
 				List<Frame> frames = getFrames(animationData);
 
-				Animation animation = new Animation(loopCount, frames);
+				AnimationData animation = new AnimationData(loopCount, frames);
 				animations.Add(animation);
 			}
 			return animations;
@@ -169,6 +200,7 @@ namespace WindowsGame1
 			foreach (XElement componentData in frameData.Elements("component"))
 			{
 				string tileSetName = (string)componentData.Attribute("tileset");
+
 				int leftOffset = (int)componentData.Attribute("left");
 				int topOffset = (int)componentData.Attribute("top");
 				int rectIndex = Convert.ToInt32(componentData.Value);
