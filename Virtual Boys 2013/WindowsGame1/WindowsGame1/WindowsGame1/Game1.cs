@@ -104,7 +104,8 @@ namespace WindowsGame1
 			// TODO: Add your drawing code here
 			spriteBatch.Begin();
 			for (int i = 0; i < gameData.tileSets[0].count; i++) {
-				//spriteBatch.Draw(gameData.tileSets[0].texture, new Rectangle(i * 0, 0, 0, 0), gameData.tileSets[0].coords[i], Color.White);
+                Rectangle dims = gameData.tileSets[0].coords[i];
+				spriteBatch.Draw(gameData.tileSets[0].texture, new Rectangle(i * dims.Width, 0, dims.Width, dims.Height), dims, Color.White);
 			}
 			spriteBatch.End();
 			base.Draw(gameTime);

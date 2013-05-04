@@ -1,6 +1,6 @@
 <data>
 	<tilesets>
-		<tileset name = "Tiles" fileName = "Tiles.bmp"
+		<tileset name = "Tiles" fileName = "Tiles"
 			TileWidth = "16" TileHeight = "16"
 			HorizontalTileCount = "8" VerticalTileCount = "1"
 			TileCount = "8"/>

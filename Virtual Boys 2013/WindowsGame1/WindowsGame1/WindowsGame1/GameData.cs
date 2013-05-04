@@ -46,11 +46,11 @@ namespace WindowsGame1
 
 		public void init(ContentManager content)
 		{
-			XElement gameData = XElement.Load("steve.xml", LoadOptions.None);
+			XElement gameData = XElement.Load("Content/steve.xml", LoadOptions.None);
 			foreach (XElement set in gameData.Element("tilesets").Elements("tileset")) {
 				TileSet s	= new TileSet();
 				s.name		= (string)set.Attribute("name");
-				//s.texture	= content.Load<Texture2D>((string)set.Attribute("fileName"));
+				s.texture	= content.Load<Texture2D>((string)set.Attribute("fileName"));
 				s.width		= (int)set.Attribute("TileWidth");
 				s.height	= (int)set.Attribute("TileHeight");
 				int hCount	= (int)set.Attribute("HorizontalTileCount");
