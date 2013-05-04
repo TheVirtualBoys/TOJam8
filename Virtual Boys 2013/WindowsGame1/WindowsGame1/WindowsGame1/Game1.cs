@@ -110,7 +110,8 @@ namespace WindowsGame1
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
-
+			audioSys.loadNSF("Content/cv3.nsf");
+			audioSys.play();
 		}
 
 		/// <summary>
@@ -187,7 +188,7 @@ namespace WindowsGame1
 			// TODO: Add your drawing code here
 			spriteBatch.Begin();
 
-			int tileSetIndex = getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
+			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
 			if (tileSetIndex >= 0)
 			{
 				int numRows = numScreenTilesHigh;
@@ -197,7 +198,7 @@ namespace WindowsGame1
 					for (int col = 0; col < numCols; ++col)
 					{
 						Map mapData = getMapData(row, col);
-						TileSet tileSet = getTileSet(mapData.tileset);
+						TileSet tileSet = gameData.getTileSet(mapData.tileset);
 
 						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
 						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
@@ -213,34 +214,26 @@ namespace WindowsGame1
 			base.Draw(gameTime);
 		}
 
-		private TileSet getTileSet(string tileSetName)
+		public void moveRightByPixels(int numPixels)
 		{
-			int index = getTileSetIndex(tileSetName);
-			return (index >= 0) ? gameData.tileSets[index] : null;
-		}
+			startingPixelOffset += numPixels;
 
-		/**
-		 * Gets the tileset index from the tilename.
-		 * Returns -1 if nothing was found.
-		 */
-		private int getTileSetIndex(string tileSetName)
-		{
-			int outIndex = -1;
-			if (!gameData.tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
+			if (startingPixelOffset >= tileWidth)
 			{
-				System.Console.Error.WriteLine("Couldn't find the tileset: " + tileSetName);
-			}
+				int numTiles = startingPixelOffset / tileWidth;
+				startingPixelOffset = startingPixelOffset % tileWidth;
 
-			return outIndex;
+				moveRightByTiles(numTiles);
+			}
 		}
 
-		private Map getMapData(int screenRow, int screenCol)
+		public Map getMapData(int screenRow, int screenCol)
 		{
 			int index = getMapDataIndex(screenRow, screenCol);
 			return (index >= 0) ? gameData.maps[index] : null;
 		}
 
-		private int getMapDataIndex(int screenRow, int screenCol)
+		public int getMapDataIndex(int screenRow, int screenCol)
 		{
 			int col = screenCol + startingTileOffset;
 
@@ -253,7 +246,7 @@ namespace WindowsGame1
 			return mapIndex;
 		}
 
-		private int getMapDataRectIndex(Map mapData, int screenRow, int screenCol)
+		public int getMapDataRectIndex(Map mapData, int screenRow, int screenCol)
 		{
 			int col = screenCol + startingTileOffset;
 			if (col >= gameData.maps[firstMap].width)
@@ -263,19 +256,6 @@ namespace WindowsGame1
 			if (index < -1)
 				index = 0;
 			return index;
-		}
-
-		public void moveRightByPixels(int numPixels)
-		{
-			startingPixelOffset += numPixels;
-
-			if (startingPixelOffset >= tileWidth)
-			{
-				int numTiles = startingPixelOffset / tileWidth;
-				startingPixelOffset = startingPixelOffset % tileWidth;
-
-				moveRightByTiles(numTiles);
-			}
 		}
 
 		public void moveRightByTiles(int numTiles)
