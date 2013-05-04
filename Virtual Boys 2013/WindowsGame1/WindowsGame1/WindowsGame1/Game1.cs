@@ -35,8 +35,6 @@ namespace WindowsGame1
 		private int numScreenTilesWide;
 		private int numScreenTilesHigh;
 
-		Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
-
 		/**
 		 * The tile column offset into the current tileset
 		 */
@@ -81,9 +79,6 @@ namespace WindowsGame1
 //			audioSys.play();
 			gameData.init(Content);
 			base.Initialize();
-
-			//TODO: need to properly initialize the tileSetNameIdMap map
-			tileSetNameIdMap.Add("Tile", 0);
 
 			startingTileOffset = 0;
 
@@ -186,7 +181,7 @@ namespace WindowsGame1
 		private int getTileSetIndex(string tileSetName)
 		{
 			int outIndex = -1;
-			if (!tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
+			if (!gameData.tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
 			{
 				System.Console.Error.WriteLine("Couldn't find the tileset: " + tileSetName);
 			}

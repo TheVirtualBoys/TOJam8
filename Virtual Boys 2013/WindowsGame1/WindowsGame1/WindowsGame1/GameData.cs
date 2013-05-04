@@ -33,6 +33,8 @@ namespace WindowsGame1
 	{
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
+		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
+
 
 		public GameData()
 		{
@@ -64,6 +66,11 @@ namespace WindowsGame1
 					}
 				}
 				tileSets.Add(s);
+
+				//add the tileset to the name -> index map with its index within the tileSets list
+				int tileSetIndex = tileSets.IndexOf(s);
+				tileSetNameIdMap.Add(s.name, tileSetIndex);
+
 				Debug.Print("Added Tileset: " + s.name);
 			}
 			foreach (XElement map in gameData.Element("maps").Elements("map")) {
