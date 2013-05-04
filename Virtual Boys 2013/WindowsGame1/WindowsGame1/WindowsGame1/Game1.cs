@@ -136,6 +136,12 @@ namespace WindowsGame1
 
 			// TODO: Add your update logic here
 
+			//walk through all the sprites and update them
+			foreach (Sprite sprite in gameData.sprites)
+			{
+				sprite.update(gameTime);
+			}
+
 			base.Update(gameTime);
 
 			UpdateInput();
@@ -210,6 +216,28 @@ namespace WindowsGame1
 					}
 				}
 			}
+
+			//walk through all the sprites and draw them
+			foreach (Sprite sprite in gameData.sprites)
+			{
+				Frame frame = sprite.CurFrame;
+				if (frame == null)
+					continue;
+
+				int numComponents = frame.NumComponents;
+				for (int i = 0; i < numComponents; ++i)
+				{
+					FrameComponent component = frame.getComponent(i);
+					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
+					Rectangle tileDims = component.getTileRect(tileSet);
+
+					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
+
+					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
+				}
+				
+			}
+
 			spriteBatch.End();
 			base.Draw(gameTime);
 		}

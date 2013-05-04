@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace WindowsGame1
 {
@@ -26,7 +27,7 @@ namespace WindowsGame1
 			loopCount = 0;
 			frames = new List<Frame>();
 
-			curFrameIndex = 0;
+			curFrameIndex = -1;
 			posLeft = 0;
 			posTop = 0;
 
@@ -38,7 +39,7 @@ namespace WindowsGame1
 			this.loopCount = loopCount;
 			frames = new List<Frame>();
 
-			curFrameIndex = 0;
+			curFrameIndex = -1;
 			posLeft = 0;
 			posTop = 0;
 
@@ -50,7 +51,7 @@ namespace WindowsGame1
 			this.loopCount = loopCount;
 			this.frames = frames;
 
-			curFrameIndex = 0;
+			curFrameIndex = -1;
 			posLeft = 0;
 			posTop = 0;
 
@@ -135,14 +136,14 @@ namespace WindowsGame1
 			curFrameIndex = 0;
 		}
 
-		public void update(long updateTime)
+		public void update(GameTime updateTime)
 		{
 			if (IsFinished)
 				return;
 			if (!IsStarted)
 				start();
 
-			curFrameTime += updateTime;
+			curFrameTime += updateTime.ElapsedGameTime.Milliseconds;
 			while (!IsFinished && curFrameTime >= CurFrame.FrameTime)
 			{
 				nextFrame();

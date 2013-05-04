@@ -47,6 +47,9 @@ namespace WindowsGame1
 		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
 		public List<Animation> animations = new List<Animation>();
 
+		public List<Sprite> sprites = new List<Sprite>();
+
+
 		public GameData()
 		{
 		}
@@ -55,6 +58,9 @@ namespace WindowsGame1
 		{
 			tileSets.Clear();
 			maps.Clear();
+			animations.Clear();
+
+			sprites.Clear();
 		}
 
 		public void init(ContentManager content)
