@@ -44,10 +44,15 @@ namespace WindowsGame1
 	{
 		public List<TileSet>	tileSets	= new List<TileSet>();
 		public List<Map>		maps		= new List<Map>();
-		public Dictionary<String, int> tileSetNameIdMap = new Dictionary<string, int>();
+		public Dictionary<string, int> tileSetNameIdMap = new Dictionary<string, int>();
 		public List<AnimationData> animations = new List<AnimationData>();
 
 		public List<Sprite> sprites = new List<Sprite>();
+
+		/**
+		 * A map of all the loaded textures. asset name -> texture
+		 */
+		public Dictionary<string, Texture2D> loadedTextures = new Dictionary<string, Texture2D>();
 
 
 		public GameData()
@@ -61,6 +66,20 @@ namespace WindowsGame1
 			animations.Clear();
 
 			sprites.Clear();
+		}
+
+		private Texture2D loadTexture(ContentManager content, string assetName)
+		{
+			Texture2D tex = null;
+
+			if (!loadedTextures.TryGetValue(assetName, out tex))
+			{
+				//didn't find the texture, so load it
+				tex = content.Load<Texture2D>(assetName);
+				loadedTextures.Add(assetName, tex);
+			}
+
+			return tex;
 		}
 
 		public void init(ContentManager content)
@@ -108,12 +127,15 @@ namespace WindowsGame1
 
 			XElement aniDataElement = XElement.Load("Content/sprites.xml", LoadOptions.None);
 			addTileSets(content, aniDataElement.Element("tilesets"));
-			addAnimations(content, gameData.Element("animations"));
+			addAnimations(content, aniDataElement.Element("animations"));
 
 		} // init()
 
 		private void addTileSets(ContentManager content, XElement tileSetsElement)
 		{
+			if (tileSetsElement == null)
+				return;
+
 			//get the new tilesets from the xml element
 			List<TileSet> newTileSets = getTileSets(content, tileSetsElement);
 
@@ -136,7 +158,8 @@ namespace WindowsGame1
 			{
 				TileSet s = new TileSet();
 				s.name = (string)set.Attribute("name");
-				s.texture = content.Load<Texture2D>(s.name);//(string)set.Attribute("fileName"));
+				string filename = (string)set.Attribute("fileName");
+				s.texture = loadTexture(content, filename);
 				s.width = (int)set.Attribute("TileWidth");
 				s.height = (int)set.Attribute("TileHeight");
 				int hCount = (int)set.Attribute("HorizontalTileCount");
@@ -160,6 +183,9 @@ namespace WindowsGame1
 
 		private void addAnimations(ContentManager content, XElement animationsElement)
 		{
+			if (animationsElement == null)
+				return;
+
 			List<AnimationData> anis = getAnimations(animationsElement);
 			animations.AddRange(anis);
 		}

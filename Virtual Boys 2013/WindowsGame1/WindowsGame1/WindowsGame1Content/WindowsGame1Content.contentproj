@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tiles.bmp">
-      <Name>Tiles</Name>
+      <Name>Tiles.bmp</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="p1p2_character_sprites.png">
-      <Name>PlayerSprites</Name>
+      <Name>p1p2_character_sprites.png</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

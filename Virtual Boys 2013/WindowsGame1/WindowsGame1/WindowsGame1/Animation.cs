@@ -56,12 +56,12 @@ namespace WindowsGame1
 
 		public Frame CurFrame
 		{
-			get { return (curFrameIndex >= 0 && curFrameIndex < aniData.NumFrames)? aniData.getFrame(curFrameIndex) : null; }
+			get { return (curFrameIndex >= 0 && curFrameIndex < aniData.NumFrames)? aniData.getFrame(curFrameIndex) : (curFrameIndex == aniData.NumFrames)? aniData.getFrame(curFrameIndex - 1) : null; }
 		}
 
 		public bool IsFinished
 		{
-			get { return curFrameIndex > aniData.NumFrames; }
+			get { return curFrameIndex >= aniData.NumFrames; }
 		}
 
 		public bool IsStarted
