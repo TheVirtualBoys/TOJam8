@@ -21,7 +21,7 @@
 #sequence
 \<sequence spriteNumber="<SpriteNumber>" sequenceNumber="<SequenceNumber>" sequenceLength="<SequenceLength>" \>
 #sequencedata
-\<sequencedata frame="<Frame>" length="<FrameCount>" bounds="<Bounds>" /\>
+\<sequencedata frame="<TileNumber>" length="<FrameCount>" /\>
 #end sequencedata
 \</sequence\>
 \</sequences\>
