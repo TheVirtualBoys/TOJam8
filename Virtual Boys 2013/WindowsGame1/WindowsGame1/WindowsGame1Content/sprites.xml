@@ -259,7 +259,7 @@
       </frame>
     </animation>
 
-    <animation loopCount="0" name="plus_100">
+    <animation loopCount="0" name="plus_1600">
       <frame frameTime="33">
         <component tileset="scores" left="0" top="0">4</component>
       </frame>
