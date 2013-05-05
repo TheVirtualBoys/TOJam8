@@ -87,9 +87,15 @@ namespace WindowsGame1
 			gameData.sprites.Add(sprite);
 
 			TileSet bgTileSet = gameData.getTileSet("bg");
-			ImageLayer bgLayer = new ImageLayer(bgTileSet);
+			ImageLayer bgLayer = new ImageLayer(gameData, bgTileSet);
 			gameData.layers.Add(bgLayer);
 			bgLayer.setSpeed(-0.25);
+
+			TileSet fenceTileSet = gameData.getTileSet("fence");
+			ImageLayer fenceLayer = new ImageLayer(gameData, fenceTileSet);
+			gameData.layers.Add(fenceLayer);
+			fenceLayer.setSpeed(-0.75);
+			fenceLayer.YOffset = gameData.ScreenHeight - fenceTileSet.height;
 
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
