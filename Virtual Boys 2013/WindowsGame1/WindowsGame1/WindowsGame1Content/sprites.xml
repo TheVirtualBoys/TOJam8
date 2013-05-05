@@ -40,6 +40,10 @@
 		TileWidth = "41" TileHeight = "240"
 		HorizontalTileCount = "1" VerticalTileCount = "1"
 		TileCount = "1"/>
+  <tileset name = "orbs" fileName = "orbs.png"
+		TileWidth = "12" TileHeight = "8"
+		HorizontalTileCount = "5" VerticalTileCount = "2"
+		TileCount = "10"/>
 </tilesets>
 
 	<animations>
@@ -373,6 +377,48 @@
     <animation loopCount="0" name="blue_glow_jump_drop">
       <frame frameTime="33">
         <component tileset="playerglow" left="0" top="0">13</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="red_orb_fly">
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">0</component>
+      </frame>
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">1</component>
+      </frame>
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">2</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="blue_orb_fly">
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">5</component>
+      </frame>
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">6</component>
+      </frame>
+      <frame frameTime="33">
+        <component tileset="PlayerSprites" left="0" top="0">7</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="red_orb_get">
+      <frame frameTime="66">
+        <component tileset="PlayerSprites" left="0" top="0">3</component>
+      </frame>
+      <frame frameTime="66">
+        <component tileset="PlayerSprites" left="0" top="0">4</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="blue_orb_get">
+      <frame frameTime="66">
+        <component tileset="PlayerSprites" left="0" top="0">8</component>
+      </frame>
+      <frame frameTime="66">
+        <component tileset="PlayerSprites" left="0" top="0">9</component>
       </frame>
     </animation>
     

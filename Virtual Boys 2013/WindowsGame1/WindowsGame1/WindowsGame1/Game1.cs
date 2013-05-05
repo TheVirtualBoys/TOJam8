@@ -46,17 +46,20 @@ namespace WindowsGame1
 		{
 			state = newState;
 			foreach (RenderTarget2D tex in renderTarget) {
-				graphics.GraphicsDevice.SetRenderTarget(tex);
-				GraphicsDevice.Clear(Color.CornflowerBlue);
+					//graphics.GraphicsDevice.SetRenderTarget(tex);
+					//GraphicsDevice.Clear(Color.CornflowerBlue);
 			}
 			graphics.GraphicsDevice.SetRenderTarget(null);
 		}
 		
 
-		KeyboardState oldKeyState;
-		GamePadState[] oldPadState;
+		KeyboardState oldKeyState, newKeyState;
+		GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
+		Texture2D titleScreen;
 		Song music;
+		SpriteFont font;
+		int score;
 
 		//FIXME: this is temp
 		MapLayer mapLayer;
@@ -93,6 +96,11 @@ namespace WindowsGame1
 
 			oldKeyState = Keyboard.GetState();
 
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				oldPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				oldPadState[1] = GamePad.GetState(PlayerIndex.Two);
+
 			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
 			sprite.Ani.start();
 			gameData.sprites.Add(sprite);
@@ -119,12 +127,29 @@ namespace WindowsGame1
 			gameData.layers.Add(mapLayer);
 			mapLayer.setSpeed(2.25);
 
+			SpriteLayer spriteLayer = new SpriteLayer(gameData);
+			gameData.layers.Add(spriteLayer);
+
+			TileSet pipeTileSet1 = gameData.getTileSet("pipe1");
+			TrainImageLayer pipeLayer1 = new TrainImageLayer(gameData, pipeTileSet1, 2 * 1000, 10 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer1);
+			pipeLayer1.setSpeed(-6);
+			pipeLayer1.FixedXOffset = gameData.ScreenWidth;
+
+			TileSet pipeTileSet2 = gameData.getTileSet("pipe2");
+			TrainImageLayer pipeLayer2 = new TrainImageLayer(gameData, pipeTileSet2, 2 * 1000, 10 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer2);
+			pipeLayer2.setSpeed(-6);
+			pipeLayer2.FixedXOffset = gameData.ScreenWidth;
+
 			// Create RenderTargets after gameData.layers is populated
 			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
-			for (int i = 0; i <= gameData.layers.Count; i++) {
+			for (int i = 0; i < gameData.layers.Count + 1; i++) {
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
 			setState(State.STATE_SPLASH);
+			font = Content.Load<SpriteFont>("System");
+			score = 0;
 		}
 
 		/// <summary>
@@ -138,6 +163,7 @@ namespace WindowsGame1
 
 			// TODO: use this.Content to load your game content here
 			music = Content.Load<Song>("OFalconer-80sSciFi");
+			titleScreen = Content.Load<Texture2D>("title.png");
 			//audioSys.loadNSF("Content/cv3.nsf");
 			//audioSys.play();
 		}
@@ -164,28 +190,31 @@ namespace WindowsGame1
 				this.Exit();
 
 			// TODO: Add your update logic here
-			KeyboardState	newKeyState = Keyboard.GetState();
-			GamePadState[] newPadState = { GamePad.GetState(PlayerIndex.One), GamePad.GetState(PlayerIndex.Two) };
+			newKeyState = Keyboard.GetState();
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.Two);
 
 			switch (state)
 			{
 				case State.STATE_GAMEPLAY:
 					if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
-					gameplayInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					gameplayInput();
 					gameplayUpdate(gameTime);
 				break;
 				case State.STATE_INTRO:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					introInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					introInput();
 					introUpdate(gameTime);
 				break;
 				case State.STATE_SCORES:
-					scoresInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					scoresInput();
 					scoresUpdate(gameTime);
 				break;
 				case State.STATE_SPLASH:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					splashInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					splashInput();
 					splashUpdate(gameTime);
 				break;
 			}
@@ -222,6 +251,7 @@ namespace WindowsGame1
 			foreach (Texture2D tex in renderTarget) {
 				spriteBatch.Draw(tex, new Rectangle(0, 0, 1024, 960), Color.White);
 			}
+			
 			spriteBatch.End();
 			base.Draw(gameTime);
 		}
@@ -232,12 +262,6 @@ namespace WindowsGame1
 			foreach (Layer layer in gameData.layers)
 			{
 				layer.Update(gameTime);
-			}
-
-			//walk through all the sprites and update them
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				sprite.update(gameTime);
 			}
 
 		}
@@ -257,26 +281,50 @@ namespace WindowsGame1
 			
 		}
 
-		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public bool keyPressed(Keys key)
+		{
+			return (!oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
+		}
+
+		public bool keyReleased(Keys key)
+		{
+			return (oldKeyState.IsKeyDown(key) && !newKeyState.IsKeyDown(key));
+		}
+
+		public bool keyPressed(int player, Buttons key)
+		{
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
+			return false;
+		}
+
+		public bool keyReleased(int player, Buttons key)
+		{
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (oldPadState[player].IsButtonDown(key) && !newPadState[player].IsButtonDown(key));
+			return false;
+		}
+
+		public void gameplayInput()
 		{
 			gameData.sprites[0].input(newKeyState);
-			if (!oldKeyState.IsKeyDown(Keys.Q) && newKeyState.IsKeyDown(Keys.Q)) setState(State.STATE_SCORES);
+			if (keyPressed(Keys.Q) || keyPressed(0, Buttons.Back) || keyPressed(1, Buttons.Back)) setState(State.STATE_SCORES);
 		}
 
-		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void introInput()
 		{
-			if (oldKeyState.GetPressedKeys().Length == 0 && newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_GAMEPLAY);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
 		}
 
-		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void scoresInput()
 		{
 			// wait for any input, then return to intro state
-			if (newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_SPLASH);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
 		}
 
-		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void splashInput()
 		{
-			if (newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_INTRO);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
 		}
 
 		public void gameplayDraw(GameTime gameTime)
@@ -292,46 +340,29 @@ namespace WindowsGame1
 				spriteBatch.End();
 			}
 
-			//walk through all the sprites and draw them
 			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
 			GraphicsDevice.Clear(Color.Transparent);
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				Frame frame = sprite.CurFrame;
-				if (frame == null)
-					continue;
-
-				int numComponents = frame.NumComponents;
-				for (int i = 0; i < numComponents; ++i)
-				{
-					FrameComponent component = frame.getComponent(i);
-					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
-					Rectangle tileDims = component.getTileRect(tileSet);
-
-					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
-
-					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
-				}
-
-			}
+			spriteBatch.DrawString(font, score.ToString(), new Vector2(3, 0), Color.White);
 			spriteBatch.End();
 			graphics.GraphicsDevice.SetRenderTarget(null);
 		}
 
 		public void introDraw(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void scoresDraw(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void splashDraw(GameTime gameTime)
 		{
-
+			spriteBatch.Begin();
+			spriteBatch.Draw(titleScreen, new Rectangle(0, 0, 1024, 960), Color.White);
+			spriteBatch.End();
 		}
 		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY)
 		{

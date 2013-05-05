@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace WindowsGame1
 {
@@ -51,6 +52,25 @@ namespace WindowsGame1
 			ani.update(frameTime);
 		}
 
+		public virtual void draw(GameTime frameTime, SpriteBatch spriteBatch)
+		{
+			Frame frame = CurFrame;
+			if (frame == null)
+				return;
+
+			int numComponents = frame.NumComponents;
+			for (int i = 0; i < numComponents; ++i)
+			{
+				FrameComponent component = frame.getComponent(i);
+				TileSet tileSet = Game1.Instance.gameData.tileSets[component.TileSetIndex];
+				Rectangle tileDims = component.getTileRect(tileSet);
+
+				Rectangle pos = new Rectangle(Left + component.Left, Top + component.Top, tileDims.Width, tileDims.Height);
+
+				spriteBatch.Draw(tileSet.texture, pos, tileDims, getFilterColour());
+			}
+		}
+
         public virtual void input(KeyboardState keys){} //HACKJEFFGIFFEN ugh passthrough to PhysicsSprite
 
 		public Frame CurFrame
@@ -58,5 +78,9 @@ namespace WindowsGame1
 			get { return Ani.CurFrame; }
 		}
 
+		public virtual Color getFilterColour()
+		{
+			return Color.White;
+		}
 	}
 }
