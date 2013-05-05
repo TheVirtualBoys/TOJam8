@@ -49,6 +49,8 @@ namespace WindowsGame1
 
 		public List<Sprite> sprites = new List<Sprite>();
 
+		public List<Layer> layers = new List<Layer>();
+
 		/**
 		 * A map of all the loaded textures. asset name -> texture
 		 */

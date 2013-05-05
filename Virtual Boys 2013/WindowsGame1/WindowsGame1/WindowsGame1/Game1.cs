@@ -140,6 +140,12 @@ namespace WindowsGame1
 
 			// TODO: Add your update logic here
 
+			//walk through and update all layers
+			foreach (Layer layer in gameData.layers)
+			{
+				layer.Update(gameTime);
+			}
+
 			//walk through all the sprites and update them
 			foreach (Sprite sprite in gameData.sprites)
 			{
@@ -204,6 +210,13 @@ namespace WindowsGame1
 
 			// TODO: Add your drawing code here
 			spriteBatch.Begin();
+
+			//walk through and draw all layers
+			foreach (Layer layer in gameData.layers)
+			{
+				layer.Draw(gameTime, spriteBatch);
+			}
+
 
 			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
 			if (tileSetIndex >= 0)
