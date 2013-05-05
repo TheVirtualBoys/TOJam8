@@ -28,11 +28,11 @@ namespace WindowsGame1
 		GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
-        static Game1 sm_game;
-        public static Game1 Instance
-        {
-            get { return sm_game; }
-        }   
+		static Game1 sm_game;
+		public static Game1 Instance
+		{
+			get { return sm_game; }
+		}   
 
 		private enum State
 		{
@@ -41,18 +41,29 @@ namespace WindowsGame1
 			STATE_GAMEPLAY,
 			STATE_SCORES
 		}
-		private State state = State.STATE_SPLASH;
+		private State state;
+		private void setState(State newState)
+		{
+			state = newState;
+			foreach (RenderTarget2D tex in renderTarget) {
+				graphics.GraphicsDevice.SetRenderTarget(tex);
+				GraphicsDevice.Clear(Color.CornflowerBlue);
+			}
+			graphics.GraphicsDevice.SetRenderTarget(null);
+		}
+		
 
 		KeyboardState oldKeyState;
 		GamePadState[] oldPadState;
 		RenderTarget2D[] renderTarget;
+		Song music;
 
 		//FIXME: this is temp
 		MapLayer mapLayer;
 
 		public Game1()
 		{
-            sm_game = this;
+			sm_game = this;
 			graphics = new GraphicsDeviceManager(this);
 			graphics.PreferredBackBufferWidth = 1024;
 			graphics.PreferredBackBufferHeight = 960;
@@ -106,6 +117,7 @@ namespace WindowsGame1
 			for (int i = 0; i <= gameData.layers.Count; i++) {
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
+			setState(State.STATE_SPLASH);
 		}
 
 		/// <summary>
@@ -118,6 +130,7 @@ namespace WindowsGame1
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
+			music = Content.Load<Song>("OFalconer-80sSciFi");
 			//audioSys.loadNSF("Content/cv3.nsf");
 			//audioSys.play();
 		}
@@ -129,6 +142,7 @@ namespace WindowsGame1
 		protected override void UnloadContent()
 		{
 			// TODO: Unload any non ContentManager content here
+			Content.Unload();
 		}
 
 		/// <summary>
@@ -149,10 +163,12 @@ namespace WindowsGame1
 			switch (state)
 			{
 				case State.STATE_GAMEPLAY:
+					if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
 					gameplayInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					gameplayUpdate(gameTime);
 				break;
 				case State.STATE_INTRO:
+					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
 					introInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					introUpdate(gameTime);
 				break;
@@ -161,6 +177,7 @@ namespace WindowsGame1
 					scoresUpdate(gameTime);
 				break;
 				case State.STATE_SPLASH:
+					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
 					splashInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					splashUpdate(gameTime);
 				break;
@@ -236,23 +253,23 @@ namespace WindowsGame1
 		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
 			gameData.sprites[0].input(newKeyState);
-			if (!oldKeyState.IsKeyDown(Keys.Q) && newKeyState.IsKeyDown(Keys.Q)) state = State.STATE_SCORES;
+			if (!oldKeyState.IsKeyDown(Keys.Q) && newKeyState.IsKeyDown(Keys.Q)) setState(State.STATE_SCORES);
 		}
 
 		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
-			if (oldKeyState.GetPressedKeys().Length == 0 && newKeyState.GetPressedKeys().Length > 0) state = State.STATE_GAMEPLAY;
+			if (oldKeyState.GetPressedKeys().Length == 0 && newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_GAMEPLAY);
 		}
 
 		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
 			// wait for any input, then return to intro state
-			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+			if (newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_SPLASH);
 		}
 
 		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
-			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+			if (newKeyState.GetPressedKeys().Length > 0) setState(State.STATE_INTRO);
 		}
 
 		public void gameplayDraw(GameTime gameTime)
@@ -349,12 +366,12 @@ namespace WindowsGame1
 			while (true)
 			{
 				int row, col;
-                mapLayer.convertScreenPxToTile(x0, y0, out row, out col);
-                Map mapData = mapLayer.getAbsoluteMapData(row, col);
-                TileSet tileSet = gameData.getTileSet(mapData.tileset);
+				mapLayer.convertScreenPxToTile(x0, y0, out row, out col);
+				Map mapData = mapLayer.getAbsoluteMapData(row, col);
+				TileSet tileSet = gameData.getTileSet(mapData.tileset);
 				//FIXME: mapLayer here is local and probably shouldn't be
-                bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
-                if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
+				bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
+				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
 					boundsX = x0;
 					boundsY = y0;
