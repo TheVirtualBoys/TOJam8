@@ -20,15 +20,56 @@ namespace WindowsGame1
         bool m_jumping;
         int lastAniIndex;
 
-        public PhysicsSprite(AnimationData aniData, int x=130, int y=120)
-            : base( aniData)
+		public enum PlayerType
+		{
+			Player1,
+			Player2
+		}
+		
+		PlayerType playerType;
+
+		public enum GlowType
+		{
+			Red_Glow,
+			Blue_Glow
+		}
+
+		GlowType glowType;
+
+		public const int ANI_IDLE = 0;
+		public const int ANI_RUN = 1;
+		public const int ANI_JUMP_LEAP = 2;
+		public const int ANI_JUMP_HANG = 3;
+		public const int ANI_JUMP_DROP = 4;
+		public const int ANI_DIE = 5;
+
+		public const int ANI_P1 = 0;
+		public const int ANI_P2 = 6;
+		public const int ANI_RED_GLOW = 17;
+		public const int ANI_BLUE_GLOW = 22;
+
+        public PhysicsSprite(AnimationData aniData, AnimationData glowAniData, PlayerType playerType)
+            : base( aniData, glowAniData)
             {
-                m_position = new Vector2( x, y);
+				this.playerType = playerType;
+                m_position = (playerType == PlayerType.Player1)? new Vector2(130, 120) : new Vector2(32, 120);
                 m_velocity = m_acceleration = new Vector2(0, 0);
                 m_lastDelta = m_jumpAccelTime = 0.0;
                 m_jumping = true; //flying start
                 lastAniIndex = -1; //set impossible state for refresh
+				glowType = PhysicsSprite.GlowType.Red_Glow;
             }
+
+		public PlayerType PlayerId
+		{
+			get { return playerType; }
+		}
+
+		public GlowType PlayerGlowType
+		{
+			get { return glowType; }
+			set { glowType = value; }
+		}
 
         public Vector2 Acceleration
         {
@@ -41,6 +82,19 @@ namespace WindowsGame1
             get { return m_velocity; }
             set { this.m_velocity = value; }
         }
+
+		private int getPlayerAniIndex(int aniTypeIndex)
+		{
+			return ((PlayerId == PlayerType.Player1) ? ANI_P1 : ANI_P2) + aniTypeIndex;
+		}
+
+		private int getPlayerGlowAniIndex(int glowAniTypeIndex)
+		{
+			int index = -1;
+			if (glowAniTypeIndex != ANI_DIE)
+				index = ((PlayerGlowType == GlowType.Red_Glow) ? ANI_RED_GLOW : ANI_BLUE_GLOW) + glowAniTypeIndex;
+			return index;
+		}
 
         public TileSet.Bounds Collides(Vector2 start, Vector2 end, out Vector2 hit)
         {
@@ -192,27 +246,37 @@ namespace WindowsGame1
             Left = (int)m_position.X;
             Top = (int)m_position.Y;
 
-            int newAniIndex = 0;
+            int newAniIndex = ANI_IDLE;
             if (m_velocity.Y != 0.0)
             {
                 double threshold = 120;
-                if (m_velocity.Y < -threshold) newAniIndex = 2;
+                if (m_velocity.Y < -threshold) newAniIndex = ANI_JUMP_LEAP;
                 else if (m_velocity.Y >= -threshold && m_velocity.Y < threshold)
                 {
-                    newAniIndex = 3;
+                    newAniIndex = ANI_JUMP_HANG;
                 }
-                else newAniIndex = 4;
+                else newAniIndex = ANI_JUMP_DROP;
             }
             else 
             {
-                newAniIndex = 1;
+                newAniIndex = ANI_RUN;
             }
 
             if (lastAniIndex != newAniIndex)
             {
-                ani = new Animation(Game1.Instance.gameData.animations[newAniIndex]);
-                ani.start();
-                lastAniIndex = newAniIndex;
+				ani = new Animation(Game1.Instance.gameData.animations[getPlayerAniIndex(newAniIndex)]);
+				ani.start();
+
+				if (newAniIndex == ANI_DIE)
+				{
+					glowAni = null;
+				}
+				else
+				{
+					glowAni = new Animation(Game1.Instance.gameData.animations[getPlayerGlowAniIndex(newAniIndex)]);
+					glowAni.start();
+				}
+				lastAniIndex = newAniIndex;
             }
         }
 

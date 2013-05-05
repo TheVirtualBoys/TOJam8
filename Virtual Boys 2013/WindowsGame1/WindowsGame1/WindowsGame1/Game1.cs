@@ -93,10 +93,10 @@ namespace WindowsGame1
 			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
 				oldPadState[1] = GamePad.GetState(PlayerIndex.Two);
 
-			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
+			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P1 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player1);
 			sprite.Ani.start();
 			gameData.sprites.Add(sprite);
-			sprite = new PhysicsSprite(gameData.animations[7], 32);
+			sprite = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P2 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player2);
 			sprite.Ani.start();
 			gameData.sprites.Add(sprite);
 
