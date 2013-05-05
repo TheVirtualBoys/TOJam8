@@ -166,12 +166,12 @@ namespace WindowsGame1
 				int vCount = (int)set.Attribute("VerticalTileCount");
 				s.count = (int)set.Attribute("TileCount");
 				int k = 0;
-				for (int i = 0; i < hCount; i++)
+				for (int i = 0; i < vCount; i++)
 				{
-					for (int j = 0; j < vCount; j++)
+					for (int j = 0; j < hCount; j++)
 					{
 						if (k++ > s.count) break;
-						s.coords.Add(new Rectangle(i * s.width, j * s.height, s.width, s.height));
+						s.coords.Add(new Rectangle(j * s.width, i * s.height, s.width, s.height));
 					}
 				}
 				tileSets.Add(s);

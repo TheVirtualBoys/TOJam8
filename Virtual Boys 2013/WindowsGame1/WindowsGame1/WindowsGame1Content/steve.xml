@@ -2,8 +2,10 @@
 <tilesets>
 <tileset name = "Collision_Tileset" fileName = "Collision_Tileset.bmp" 
 	TileWidth = "16" TileHeight = "16"
-	HorizontalTileCount = "1" VerticalTileCount = "60"
-	TileCount = "60"/>
+	HorizontalTileCount="20" VerticalTileCount="3"
+	TileCount = "60">
+</tileset>
+
 </tilesets>
 
 
