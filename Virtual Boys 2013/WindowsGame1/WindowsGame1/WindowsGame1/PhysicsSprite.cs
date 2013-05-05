@@ -40,9 +40,54 @@ namespace WindowsGame1
             set { this.m_velocity = value; }
         }
 
+        public TileSet.Bounds Collides(Vector2 start, Vector2 end, out Vector2 hit)
+        {
+            int hit_x = 0, hit_y = 0;
+            TileSet.Bounds bounds = Game1.Instance.ray((int)start.X, (int)start.Y, (int)end.X, (int)end.Y, out hit_x, out hit_y);
+            hit = new Vector2(hit_x, hit_y);
+            return bounds; 
+        }
+
+        public bool CollisionDownHelper( bool collides, Vector2 offset, Vector2 position, double y, out double outY )
+        {
+            Vector2 hitPos;
+            bool localCollides = Collides( m_position + offset, position + offset + new Vector2(1, 1), out hitPos ) != TileSet.Bounds.BOUNDS_NONE;
+            if (localCollides)
+            {
+                outY = Math.Min(y, hitPos.Y);
+                collides |= localCollides;
+            }
+            else outY = y;
+            return collides;
+        }
+
+        public bool CollisionUpHelper(bool collides, Vector2 offset, Vector2 position, double y, out double outY)
+        {
+            Vector2 hitPos;
+            bool localCollides = Collides(m_position + offset, position + offset, out hitPos) != TileSet.Bounds.BOUNDS_NONE;
+            if (localCollides)
+            {
+                outY = Math.Max(y, hitPos.Y);
+                collides |= localCollides;
+            }
+            else outY = y;
+            return collides;
+        }
+
+        public bool CollisionRightHelper(bool pastCollides, Vector2 offset, Vector2 position, bool isSlash, out bool outIsSlash, bool isBSlash, out bool outIsBSlash)
+        {
+            Vector2 hitPos;
+            TileSet.Bounds bound = Collides(m_position + offset, position + offset + new Vector2(1, 0), out hitPos);
+
+            outIsSlash = isSlash | (bound & TileSet.Bounds.BOUNDS_SLASH) == TileSet.Bounds.BOUNDS_SLASH;
+            outIsBSlash = isBSlash | (bound & TileSet.Bounds.BOUNDS_BSLASH) == TileSet.Bounds.BOUNDS_BSLASH;
+            bool collided = bound != TileSet.Bounds.BOUNDS_NONE && !isSlash && !isBSlash;  //hit something which isn't a slash and isnt a backslash
+            return pastCollides | collided;
+        }
+
         public override void update(GameTime frameTime)
         {
-            base.update( frameTime );
+            base.update(frameTime);
 
             float dt = (float)(frameTime.ElapsedGameTime.Seconds + frameTime.ElapsedGameTime.Milliseconds * 0.001);
             m_velocity += m_acceleration * dt;
@@ -66,22 +111,71 @@ namespace WindowsGame1
                 killVeloY = true;
                 position.Y = 0;
             }
-            if (position.Y + height >= 240 )
+            if (position.Y + height >= 240)
             {
                 killVeloY = true;
                 position.Y = 239 - height;
             }
 
-            int hit_x = 0, hit_y = 0;
-            TileSet.Bounds bounds = Game1.Instance.ray((int)m_position.X + width - 1, (int)m_position.Y + height - 1, (int)position.X + width, (int)position.Y + height, out hit_x, out hit_y);
-            //bound = CheckRay( position + new Vector2( width, height ), out hitPos );
-            Vector2 hitPos = new Vector2(hit_x - width, hit_y - height);
-
-            if ( bounds != TileSet.Bounds.BOUNDS_NONE )
+            //downward checks (left middle right)
             {
-                killVeloY = true;
-                position.Y = hitPos.Y;
+                double minY = 240;
+                bool collide = false;
+                float insideHeight = height - 1;
+                Vector2 insideLeftBotOffset = new Vector2(0, insideHeight);
+                Vector2 insideMidBotOffset = new Vector2(width / 2, insideHeight);
+                Vector2 insideRightBotOffset = new Vector2(width - 1, insideHeight);
+                collide = CollisionDownHelper(collide, insideLeftBotOffset, position, minY, out minY);
+                collide = CollisionDownHelper(collide, insideMidBotOffset, position, minY, out minY);
+                collide = CollisionDownHelper(collide, insideRightBotOffset, position, minY, out minY);
+                minY -= insideHeight + 1;
+                if (collide)
+                {
+                    killVeloY = true;
+                    position.Y = (float)minY;
+
+                }
             }
+            //up checks (left, middle, right)
+            {
+                double maxY = 0;
+                bool collide = false;
+                Vector2 insideLeftTopOffset = new Vector2(0, 0);
+                Vector2 insideMidTopOffset = new Vector2(width / 2, 0);
+                Vector2 insideRightTopOffset = new Vector2(width - 1, 0);
+                collide = CollisionUpHelper(collide, insideLeftTopOffset, position, maxY, out maxY);
+                collide = CollisionUpHelper(collide, insideMidTopOffset, position, maxY, out maxY);
+                collide = CollisionUpHelper(collide, insideRightTopOffset, position, maxY, out maxY);
+                if (collide)
+                {
+                    killVeloY = true;
+                    position.Y = Math.Min(239 - height, (float)maxY + 1 );
+                }
+            }
+
+            //fwd checks (in quarters top to bottom)
+            {
+                bool collide = false, isSlash = false, isBSlash = false;
+                float insideWidth = width - 1;
+                Vector2 insideRight0Offset = new Vector2(insideWidth, 0);
+                Vector2 insideRight1Offset = new Vector2(insideWidth, height / 3);
+                Vector2 insideRight2Offset = new Vector2(insideWidth, 2 * height / 3);
+                Vector2 insideRight3Offset = new Vector2(insideWidth, height - 1);
+                collide = CollisionRightHelper(collide, insideRight0Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight1Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight2Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight3Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
+                if (collide)
+                {
+                    killVeloX = true;
+                    position.Y = 0; //HACKJEFFGIFFEN
+                }
+             /*   if ( isSlash )
+                {
+                    position.X = 
+                */
+            }
+
 
             if (killVeloX) m_velocity.X = 0;
             if (killVeloY) m_velocity.Y = 0;
