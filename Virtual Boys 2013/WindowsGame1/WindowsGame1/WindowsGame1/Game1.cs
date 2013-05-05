@@ -29,7 +29,14 @@ namespace WindowsGame1
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
 
-		State state;
+		private enum State
+		{
+			STATE_SPLASH,
+			STATE_INTRO,
+			STATE_GAMEPLAY,
+			STATE_SCORES
+		}
+		private State state = State.STATE_SPLASH;
 
 		KeyboardState oldKeyState;
 
