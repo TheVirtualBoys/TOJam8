@@ -9,7 +9,7 @@ namespace WindowsGame1
 {
 	public class Sprite
 	{
-		private Animation ani;
+		protected Animation ani;
 		private int left;
 		private int top;
 

@@ -18,6 +18,7 @@ namespace WindowsGame1
         double m_lastDelta;
         double m_jumpAccelTime;
         bool m_jumping;
+        int lastAniIndex;
 
         public PhysicsSprite(AnimationData aniData)
             : base( aniData)
@@ -26,6 +27,7 @@ namespace WindowsGame1
                 m_velocity = m_acceleration = new Vector2(0, 0);
                 m_lastDelta = m_jumpAccelTime = 0.0;
                 m_jumping = true; //flying start
+                lastAniIndex = -1; //set impossible state for refresh
             }
 
         public Vector2 Acceleration
@@ -181,9 +183,33 @@ namespace WindowsGame1
             if (killVeloY) m_velocity.Y = 0;
 
             m_position = position;
-            //patch back the position
+            
+            //patch back the info
             Left = (int)m_position.X;
             Top = (int)m_position.Y;
+
+            int newAniIndex = 0;
+            if (m_velocity.Y != 0.0)
+            {
+                double threshold = 120;
+                if (m_velocity.Y < -threshold) newAniIndex = 2;
+                else if (m_velocity.Y >= -threshold && m_velocity.Y < threshold)
+                {
+                    newAniIndex = 3;
+                }
+                else newAniIndex = 4;
+            }
+            else 
+            {
+                newAniIndex = 1;
+            }
+
+            if (lastAniIndex != newAniIndex)
+            {
+                ani = new Animation(Game1.Instance.gameData.animations[newAniIndex]);
+                ani.start();
+                lastAniIndex = newAniIndex;
+            }
         }
 
         //HACKJEFFGIFFEN should abstract into a Player composite object, which has a known keybind, input tuning, and PhysicsSprite
