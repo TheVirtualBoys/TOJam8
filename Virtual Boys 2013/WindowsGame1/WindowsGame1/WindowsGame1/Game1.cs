@@ -47,8 +47,8 @@ namespace WindowsGame1
 		}
 		
 
-		KeyboardState oldKeyState, newKeyState;
-		GamePadState[] oldPadState, newPadState;
+		static KeyboardState oldKeyState, newKeyState;
+		static GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
 		Texture2D titleScreen, introScreen;
 		Song music;
@@ -280,24 +280,36 @@ namespace WindowsGame1
 			
 		}
 
-		public bool keyPressed(Keys key)
+		public static bool keyPressed(Keys key)
 		{
 			return (!oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
 		}
 
-		public bool keyReleased(Keys key)
+		public static bool keyReleased(Keys key)
 		{
 			return (oldKeyState.IsKeyDown(key) && !newKeyState.IsKeyDown(key));
 		}
 
-		public bool keyPressed(int player, Buttons key)
+		public static bool keyHeld(Keys key)
+		{
+			return (oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
+		}
+
+		public static bool keyHeld(int player, Buttons key)
+		{
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
+			return false;
+		}
+
+		public static bool keyPressed(int player, Buttons key)
 		{
 			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
 				return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
 			return false;
 		}
 
-		public bool keyReleased(int player, Buttons key)
+		public static bool keyReleased(int player, Buttons key)
 		{
 			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
 				return (oldPadState[player].IsButtonDown(key) && !newPadState[player].IsButtonDown(key));
