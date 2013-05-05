@@ -42,14 +42,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tiles.bmp">
-      <Name>Tiles.bmp</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="cv3.nsf">
       <Name>cv3.nsf</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -73,6 +65,14 @@
   <ItemGroup>
     <Compile Include="p1p2_character_sprites.png">
       <Name>p1p2_character_sprites.png</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collision_Tileset.bmp">
+      <Name>Collision_Tileset.bmp</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

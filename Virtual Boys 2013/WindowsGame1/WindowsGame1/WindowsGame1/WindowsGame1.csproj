@@ -107,11 +107,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioSys.cs" />
+    <Compile Include="Audio\AudioSys.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationData.cs" />
+<<<<<<< HEAD
     <Compile Include="PhysicsSprite.cs" />
     <Compile Include="SfxrParams.cs" />
+=======
+    <Compile Include="States\BaseState.cs" />
+    <Compile Include="Audio\SfxrParams.cs" />
+>>>>>>> 65efbed419951c1d721c879e0a315566b9a399ae
     <Compile Include="Sprite.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="FrameComponent.cs" />
@@ -119,17 +124,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Synthesizer.cs" />
+    <Compile Include="States\Splash.cs" />
+    <Compile Include="States\StateMachine.cs" />
+    <Compile Include="Audio\Synthesizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
-    <None Include="GMGME.dll">
+    <Content Include="GMGME.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="GMGME.pdb">
+    </Content>
+    <Content Include="GMGME.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="IEShims.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OpenAL32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WindowsGame1Content\WindowsGame1Content.contentproj">

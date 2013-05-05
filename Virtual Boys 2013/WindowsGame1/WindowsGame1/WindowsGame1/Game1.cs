@@ -282,6 +282,86 @@ namespace WindowsGame1
 			}
 		}
 
+		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY, Map mapData, TileSet tileSet)
+		{
+			//defaults
+			boundsX = -1;
+			boundsY = -1;
+
+			TileSet.Bounds bounds = TileSet.Bounds.BOUNDS_NONE;
+
+			//bresenham's line alg
+			/*
+			   dx := abs(x1-x0)
+			   dy := abs(y1-y0) 
+			   if x0 < x1 then sx := 1 else sx := -1
+			   if y0 < y1 then sy := 1 else sy := -1
+			   err := dx-dy
+ 
+			   loop
+				 plot(x0,y0)
+				 if x0 = x1 and y0 = y1 exit loop
+				 e2 := 2*err
+				 if e2 > -dy then 
+				   err := err - dy
+				   x0 := x0 + sx
+				 end if
+				 if e2 <  dx then 
+				   err := err + dx
+				   y0 := y0 + sy 
+				 end if
+			   end loop
+			 */
+
+			int dx = Math.Abs(x1 - x0);
+			int dy = Math.Abs(y1 - y0);
+			int sx = (x0 < x1) ? 1 : -1;
+			int sy = (y0 < y1) ? 1 : -1;
+			int err = dx - dy;
+
+			while (true)
+			{
+				bounds = getMapTileBounds(x0, y0, mapData, tileSet);
+				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
+				{
+					boundsX = x0;
+					boundsY = y0;
+					break;
+				}
+
+				if (x0 == x1 && y0 == y1)
+					break;
+				int e2 = 2 * err;
+				if (e2 > -dy)
+				{
+					err -= dy;
+					x0 += sx;
+				}
+				if (e2 < dx)
+				{
+					err += dx;
+					y0 += sy;
+				}
+			}
+
+			return bounds;
+		}
+
+		private TileSet.Bounds getMapTileBounds(int px, int py, Map mapData, TileSet tileSet)
+		{
+			TileSet.Bounds bounds = TileSet.Bounds.BOUNDS_NONE;
+
+			//get the tile position for the pixel coords
+			int row, col;
+			convertScreenPxToTile(px, py, out row, out col);
+
+			//get the bounds for the tile
+			int tileTypeIndex = mapData.data[row][col];
+			bounds = tileSet.bounds[tileTypeIndex];
+
+			return bounds;
+		}
+
 		public Map getMapData(int screenRow, int screenCol)
 		{
 			int index = getMapDataIndex(screenRow, screenCol);
@@ -337,6 +417,22 @@ namespace WindowsGame1
 				secondMap = getNextMap();
 			}
 		}
+
+		/**
+		 * Gives the screen pixel of the top-left corner of the tile
+		 */
+		private void convertTileToScreenPx(int row, int col, out int pX, out int pY)
+		{
+			pX = (col - startingTileOffset) * tileWidth - startingPixelOffset;
+			pY = row * tileHeight;
+		}
+
+		private void convertScreenPxToTile(int pX, int pY, out int row, out int col)
+		{
+			col = (pX + startingPixelOffset) / tileWidth + startingTileOffset;
+			row = pY / tileHeight;
+		}
+
 
 		/**
 		 * Returns the map index for the next map to be used
