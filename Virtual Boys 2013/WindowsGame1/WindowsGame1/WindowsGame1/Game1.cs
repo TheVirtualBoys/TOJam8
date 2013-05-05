@@ -411,9 +411,44 @@ namespace WindowsGame1
 				bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
 				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
-					boundsX = x0;
-					boundsY = y0;
-					break;
+                    if ((bounds & TileSet.Bounds.BOUNDS_SLASH) == TileSet.Bounds.BOUNDS_SLASH)
+                    {
+                        //tiles are all offset leftward by pixelOffset pixels from being screen aligned
+                        //slash tile's top left origin is then 
+                        Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
+                        //top left tri is clear, bot right tri is hit
+                        int subTileY = y0 - (int)boundOrigin.Y;
+                        int subTileX = x0 - (int)boundOrigin.X;
+                        int subSum = subTileY + subTileX;
+                        if (subSum > 15)
+                        {
+                            boundsX = x0;
+                            boundsY = y0;
+                            break;
+                        }
+                    }
+                    else if ((bounds & TileSet.Bounds.BOUNDS_BSLASH) == TileSet.Bounds.BOUNDS_BSLASH)
+                    {
+                        //tiles are all offset leftward by pixelOffset pixels from being screen aligned
+                        //slash tile's top left origin is then 
+                        Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
+                        //top left tri is clear, bot right tri is hit
+                        int subTileY = y0 - (int)boundOrigin.Y;
+                        int subTileX = x0 - (int)boundOrigin.X;
+                        int subSum = subTileY + subTileX;
+                        if (subSum < 15)
+                        {
+                            boundsX = x0;
+                            boundsY = y0;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        boundsX = x0;
+                        boundsY = y0;
+                        break;
+                    }
 				}
 
 				if (x0 == x1 && y0 == y1)

@@ -53,7 +53,8 @@ namespace WindowsGame1
         public bool CollisionDownHelper( bool collides, Vector2 offset, Vector2 position, double y, out double outY )
         {
             Vector2 hitPos;
-            bool localCollides = Collides( m_position + offset, position + offset + new Vector2(1, 1), out hitPos ) != TileSet.Bounds.BOUNDS_NONE;
+            Collides( m_position + offset, position + offset + new Vector2(1, 1), out hitPos );
+            bool localCollides = hitPos.X != -1 && hitPos.Y != -1;
             if (localCollides)
             {
                 outY = Math.Min(y, hitPos.Y);
@@ -66,7 +67,8 @@ namespace WindowsGame1
         public bool CollisionUpHelper(bool collides, Vector2 offset, Vector2 position, double y, out double outY)
         {
             Vector2 hitPos;
-            bool localCollides = Collides(m_position + offset, position + offset, out hitPos) != TileSet.Bounds.BOUNDS_NONE;
+            Collides(m_position + offset, position + offset, out hitPos);
+            bool localCollides = hitPos.X != -1 && hitPos.Y != -1;
             if (localCollides)
             {
                 outY = Math.Max(y, hitPos.Y);
@@ -76,14 +78,19 @@ namespace WindowsGame1
             return collides;
         }
 
-        public bool CollisionRightHelper(bool pastCollides, Vector2 offset, Vector2 position, bool isSlash, out bool outIsSlash, bool isBSlash, out bool outIsBSlash)
+        public bool CollisionRightHelper(bool pastCollides, Vector2 offset, Vector2 position, double y, out double outY, bool isSlash, out bool outIsSlash, bool isBSlash, out bool outIsBSlash)
         {
             Vector2 hitPos;
             TileSet.Bounds bound = Collides(m_position + offset, position + offset + new Vector2(1, 0), out hitPos);
 
             outIsSlash = isSlash | (bound & TileSet.Bounds.BOUNDS_SLASH) == TileSet.Bounds.BOUNDS_SLASH;
             outIsBSlash = isBSlash | (bound & TileSet.Bounds.BOUNDS_BSLASH) == TileSet.Bounds.BOUNDS_BSLASH;
-            bool collided = bound != TileSet.Bounds.BOUNDS_NONE && !isSlash && !isBSlash;  //hit something which isn't a slash and isnt a backslash
+            bool collided = hitPos.X != -1 && hitPos.Y != -1;
+            outY = y;
+            if (collided)
+            {
+                outY = Math.Min(y, hitPos.Y);
+            }
             return pastCollides | collided;
         }
 
@@ -127,14 +134,14 @@ namespace WindowsGame1
                 Vector2 insideLeftBotOffset = new Vector2(0, insideHeight);
                 Vector2 insideMidBotOffset = new Vector2(width / 2, insideHeight);
                 Vector2 insideRightBotOffset = new Vector2(width - 1, insideHeight);
-                collide = CollisionDownHelper(collide, insideLeftBotOffset, position, minY, out minY);
+//                collide = CollisionDownHelper(collide, insideLeftBotOffset, position, minY, out minY);
                 collide = CollisionDownHelper(collide, insideMidBotOffset, position, minY, out minY);
                 collide = CollisionDownHelper(collide, insideRightBotOffset, position, minY, out minY);
                 minY -= insideHeight + 1;
                 if (collide)
                 {
                     killVeloY = true;
-                    position.Y = (float)minY;
+                    position.Y = Math.Max(0, (float)minY);
 
                 }
             }
@@ -159,18 +166,28 @@ namespace WindowsGame1
             {
                 bool collide = false, isSlash = false, isBSlash = false;
                 float insideWidth = width - 1;
+                double minY = 240;
                 Vector2 insideRight0Offset = new Vector2(insideWidth, 0);
                 Vector2 insideRight1Offset = new Vector2(insideWidth, height / 3);
                 Vector2 insideRight2Offset = new Vector2(insideWidth, 2 * height / 3);
                 Vector2 insideRight3Offset = new Vector2(insideWidth, height - 1);
-                collide = CollisionRightHelper(collide, insideRight0Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight1Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight2Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight3Offset, position, isSlash, out isSlash, isBSlash, out isBSlash);
+                double fakeY = 240;
+                collide = CollisionRightHelper(collide, insideRight0Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight1Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight2Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
+                collide = CollisionRightHelper(collide, insideRight3Offset, position, minY, out minY, isSlash, out isSlash, isBSlash, out isBSlash);
                 if (collide)
                 {
-                    killVeloX = true;
-                    m_color = Color.Red;
+                    minY -= height; //wrong for all but last who cares
+                    if (isSlash || isBSlash) //slide
+                    {
+                        position.Y = Math.Min(239 - height, (float)minY - 3);
+                    }
+                    else
+                    {
+                        killVeloX = true;
+                        m_color = Color.Red;
+                    }
                 }
                 else
                 {

@@ -23,9 +23,9 @@ namespace WindowsGame1
 		/**
 		 * The tile column offset into the current tileset
 		 */
-		int tileOffset;
+		public int tileOffset;
 
-		int pixelOffset;
+		public int pixelOffset;
 
 		/**
 		 * The first map that is shown on the screen
