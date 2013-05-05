@@ -142,8 +142,8 @@ namespace WindowsGame1
 			pipeLayer2.FixedXOffset = gameData.ScreenWidth;
 
 			// Create RenderTargets after gameData.layers is populated
-			renderTarget = new RenderTarget2D[gameData.layers.Count];
-			for (int i = 0; i < gameData.layers.Count; i++) {
+			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
+			for (int i = 0; i < gameData.layers.Count + 1; i++) {
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
 			setState(State.STATE_SPLASH);
