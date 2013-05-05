@@ -66,6 +66,7 @@ namespace WindowsGame1
 		int secondMap;
 
 		KeyboardState oldKeyState;
+		GamePadState[] oldPadState;
 
 
 		public Game1()
@@ -147,23 +148,25 @@ namespace WindowsGame1
 				this.Exit();
 
 			// TODO: Add your update logic here
-			KeyboardState newKeyState = Keyboard.GetState();
+			KeyboardState	newKeyState = Keyboard.GetState();
+			GamePadState[] newPadState = { GamePad.GetState(PlayerIndex.One), GamePad.GetState(PlayerIndex.Two) };
+
 			switch (state)
 			{
 				case State.STATE_GAMEPLAY:
-					gameplayInput(oldKeyState, newKeyState);
+					gameplayInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					gameplayUpdate(gameTime);
 				break;
 				case State.STATE_INTRO:
-					introInput(oldKeyState, newKeyState);
+					introInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					introUpdate(gameTime);
 				break;
 				case State.STATE_SCORES:
-					scoresInput(oldKeyState, newKeyState);
+					scoresInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					scoresUpdate(gameTime);
 				break;
 				case State.STATE_SPLASH:
-					splashInput(oldKeyState, newKeyState);
+					splashInput(oldKeyState, newKeyState, oldPadState, newPadState);
 					splashUpdate(gameTime);
 				break;
 			}
@@ -243,36 +246,37 @@ namespace WindowsGame1
 
 		public void introUpdate(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void scoresUpdate(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void splashUpdate(GameTime gameTime)
 		{
-
+			
 		}
 
-		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
 			gameData.sprites[0].input(newKeyState);
+			if (!oldKeyState.IsKeyDown(Keys.Q) && newKeyState.IsKeyDown(Keys.Q)) state = State.STATE_SCORES;
 		}
 
-		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
-			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_GAMEPLAY;
+			if (oldKeyState.GetPressedKeys().Length == 0 && newKeyState.GetPressedKeys().Length > 0) state = State.STATE_GAMEPLAY;
 		}
 
-		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
 			// wait for any input, then return to intro state
 			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
 		}
 
-		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
 		{
 			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
 		}
