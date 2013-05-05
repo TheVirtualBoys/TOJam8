@@ -67,9 +67,14 @@ namespace WindowsGame1
 
 		public virtual void draw(GameTime frameTime, SpriteBatch spriteBatch)
 		{
-			if (glowAni != null)
-				drawFrame(CurGlowFrame, spriteBatch);
 			drawFrame(CurFrame, spriteBatch);
+			if (glowAni != null)
+			{
+				BlendState oldState = spriteBatch.GraphicsDevice.BlendState;
+				spriteBatch.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+				drawFrame(CurGlowFrame, spriteBatch);
+				spriteBatch.GraphicsDevice.BlendState = oldState;
+			}
 		}
 
 		protected void drawFrame(Frame frame, SpriteBatch spriteBatch)
