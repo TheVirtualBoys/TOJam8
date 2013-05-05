@@ -116,15 +116,36 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="scores.png">
+      <Name>scores.png</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="OFalconer-80sSciFi.mp3">
       <Name>OFalconer-80sSciFi</Name>
       <Importer>Mp3Importer</Importer>
       <Processor>SongProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="scores.png">
-      <Name>scores.png</Name>
+    <Compile Include="player_glow.png">
+      <Name>player_glow.png</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="pipe1.png">
+      <Name>pipe1.png</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="pipe2.png">
+      <Name>pipe2.png</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

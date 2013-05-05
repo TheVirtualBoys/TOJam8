@@ -110,6 +110,7 @@
     <Compile Include="Audio\AudioSys.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationData.cs" />
+    <Compile Include="TrainImageLayer.cs" />
     <Compile Include="ImageLayer.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="MapLayer.cs" />

@@ -28,6 +28,18 @@
 		TileWidth = "42" TileHeight = "14"
 		HorizontalTileCount = "5" VerticalTileCount = "10"
 		TileCount = "50"/>
+  <tileset name = "playerglow" fileName = "player_glow.png"
+		TileWidth = "29" TileHeight = "34"
+		HorizontalTileCount = "7" VerticalTileCount = "2"
+		TileCount = "14"/>
+  <tileset name = "pipe1" fileName = "pipe1.png"
+		TileWidth = "25" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+  <tileset name = "pipe2" fileName = "pipe2.png"
+		TileWidth = "41" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
@@ -289,6 +301,78 @@
       </frame>
       <frame frameTime="33">
         <component tileset="scores" left="0" top="0">49</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="red_glow_idle">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">0</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="blue_glow_idle">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">7</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="red_glow_run">
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">1</component>
+      </frame>
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">2</component>
+      </frame>
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">3</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="-1" name="blue_glow_run">
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">8</component>
+      </frame>
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">9</component>
+      </frame>
+      <frame frameTime="100">
+        <component tileset="playerglow" left="0" top="0">10</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="red_glow_jump_leap">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">4</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="red_glow_jump_hang">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">5</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="red_glow_jump_drop">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">6</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="blue_glow_jump_leap">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">11</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="blue_glow_jump_hang">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">12</component>
+      </frame>
+    </animation>
+
+    <animation loopCount="0" name="blue_glow_jump_drop">
+      <frame frameTime="33">
+        <component tileset="playerglow" left="0" top="0">13</component>
       </frame>
     </animation>
     

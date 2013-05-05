@@ -53,8 +53,8 @@ namespace WindowsGame1
 		}
 		
 
-		KeyboardState oldKeyState;
-		GamePadState[] oldPadState;
+		KeyboardState oldKeyState, newKeyState;
+		GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
 		Song music;
 		SpriteFont font;
@@ -95,6 +95,11 @@ namespace WindowsGame1
 
 			oldKeyState = Keyboard.GetState();
 
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				oldPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				oldPadState[1] = GamePad.GetState(PlayerIndex.Two);
+
 			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
 			sprite.Ani.start();
 			gameData.sprites.Add(sprite);
@@ -105,16 +110,17 @@ namespace WindowsGame1
 			bgLayer.setSpeed(-0.25);
 
 			TileSet subwayTileSet = gameData.getTileSet("subway");
-			ImageLayer subwayLayer = new ImageLayer(gameData, subwayTileSet);
+			TrainImageLayer subwayLayer = new TrainImageLayer(gameData, subwayTileSet, 10 * 1000, 30 * 1000, -4, -15);
 			gameData.layers.Add(subwayLayer);
 			subwayLayer.setSpeed(-4);
-			subwayLayer.YOffset = 120;
+			subwayLayer.FixedYOffset = 120;
+			subwayLayer.FixedXOffset = gameData.ScreenWidth;
 
 			TileSet fenceTileSet = gameData.getTileSet("fence");
 			ImageLayer fenceLayer = new ImageLayer(gameData, fenceTileSet);
 			gameData.layers.Add(fenceLayer);
 			fenceLayer.setSpeed(-0.75);
-			fenceLayer.YOffset = gameData.ScreenHeight - fenceTileSet.height;
+			fenceLayer.FixedYOffset = gameData.ScreenHeight - fenceTileSet.height;
 
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
@@ -167,28 +173,31 @@ namespace WindowsGame1
 				this.Exit();
 
 			// TODO: Add your update logic here
-			KeyboardState	newKeyState = Keyboard.GetState();
-			GamePadState[] newPadState = { GamePad.GetState(PlayerIndex.One), GamePad.GetState(PlayerIndex.Two) };
+			newKeyState = Keyboard.GetState();
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.Two);
 
 			switch (state)
 			{
 				case State.STATE_GAMEPLAY:
 					if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
-					gameplayInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					gameplayInput();
 					gameplayUpdate(gameTime);
 				break;
 				case State.STATE_INTRO:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					introInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					introInput();
 					introUpdate(gameTime);
 				break;
 				case State.STATE_SCORES:
-					scoresInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					scoresInput();
 					scoresUpdate(gameTime);
 				break;
 				case State.STATE_SPLASH:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					splashInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					splashInput();
 					splashUpdate(gameTime);
 				break;
 			}
@@ -261,30 +270,38 @@ namespace WindowsGame1
 			
 		}
 
-		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+        public bool keyPressed(Keys key)
+        {
+            return (!oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
+        }
+
+        public bool keyPressed(int player, Buttons key)
+        {
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
+			return false;
+        }
+
+		public void gameplayInput()
 		{
 			gameData.sprites[0].input(newKeyState);
-			if (!oldKeyState.IsKeyDown(Keys.Q) && newKeyState.IsKeyDown(Keys.Q))
-				setState(State.STATE_SCORES);
+            if (keyPressed(Keys.Q) || keyPressed(0, Buttons.Back) || keyPressed(1, Buttons.Back)) setState(State.STATE_SCORES);
 		}
 
-		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void introInput()
 		{
-			if (oldKeyState.GetPressedKeys().Length == 0 && newKeyState.GetPressedKeys().Length > 0)
-				setState(State.STATE_GAMEPLAY);
+            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
 		}
 
-		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void scoresInput()
 		{
 			// wait for any input, then return to intro state
-			if (newKeyState.GetPressedKeys().Length > 0)
-				setState(State.STATE_SPLASH);
+            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
 		}
 
-		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState, GamePadState[] oldPadState, GamePadState[] newPadState)
+		public void splashInput()
 		{
-			if (newKeyState.GetPressedKeys().Length > 0)
-				setState(State.STATE_INTRO);
+            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
 		}
 
 		public void gameplayDraw(GameTime gameTime)
