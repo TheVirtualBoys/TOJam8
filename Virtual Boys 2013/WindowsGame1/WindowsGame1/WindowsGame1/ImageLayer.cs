@@ -19,6 +19,21 @@ namespace WindowsGame1
 		TileSet tileSet;
 		int imageIndex;
 
+		/**
+		 * Creates a new ImageLayer with the assumption that the tileset only contains 1 image
+		 */
+		public ImageLayer(TileSet tileSet)
+		{
+			this.tileSet = tileSet;
+			this.imageIndex = 0;
+
+			pxPerFrameSpeed = 0;
+			pixelShiftSizeAccumulator = 0;
+
+			xOffset = 0;
+			yOffset = 0;
+		}
+
 		public ImageLayer(TileSet tileSet, int imageIndex)
 		{
 			this.tileSet = tileSet;
@@ -40,13 +55,16 @@ namespace WindowsGame1
 			//remove the integer value of the accumulator, which leaves just the fractional part for next time
 			pixelShiftSizeAccumulator -= pxShiftSize;
 
+			xOffset += pxShiftSize;
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
 			Rectangle srcRect = tileSet.coords[imageIndex];
-			Rectangle dest = new Rectangle(0, 0, srcRect.Width, srcRect.Height);
+			Rectangle dest = new Rectangle(xOffset, yOffset, srcRect.Width, srcRect.Height);
 			spriteBatch.Draw(tileSet.texture, dest, srcRect, Color.White);
+
+
 		}
 
 		public override void setSpeed(double pxPerFrame)

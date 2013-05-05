@@ -276,6 +276,7 @@ namespace WindowsGame1
 			if (!tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
 			{
 				System.Console.Error.WriteLine("Couldn't find the tileset: " + tileSetName);
+				outIndex = -1;
 			}
 
 			return outIndex;

@@ -78,6 +78,11 @@ namespace WindowsGame1
 			sprite.Ani.start();
 			gameData.sprites.Add(sprite);
 
+			TileSet bgTileSet = gameData.getTileSet("bg");
+			ImageLayer bgLayer = new ImageLayer(bgTileSet);
+			gameData.layers.Add(bgLayer);
+			bgLayer.setSpeed(-0.25);
+
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
 			mapLayer.setSpeed(2.25);
