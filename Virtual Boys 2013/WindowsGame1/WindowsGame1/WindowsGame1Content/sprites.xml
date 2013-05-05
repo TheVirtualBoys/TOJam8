@@ -32,6 +32,14 @@
 		TileWidth = "29" TileHeight = "34"
 		HorizontalTileCount = "7" VerticalTileCount = "2"
 		TileCount = "14"/>
+  <tileset name = "pipe1" fileName = "pipe1.png"
+		TileWidth = "25" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+  <tileset name = "pipe2" fileName = "pipe2.png"
+		TileWidth = "41" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
