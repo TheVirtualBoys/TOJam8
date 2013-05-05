@@ -54,8 +54,8 @@ namespace WindowsGame1
 		{
             sm_game = this;
 			graphics = new GraphicsDeviceManager(this);
-			graphics.PreferredBackBufferWidth = 256;
-			graphics.PreferredBackBufferHeight = 240;
+			graphics.PreferredBackBufferWidth = 1024;
+			graphics.PreferredBackBufferHeight = 960;
 			//graphics.PreferredBackBufferWidth = 1024;
 			//graphics.PreferredBackBufferHeight = 960;
 			graphics.ApplyChanges();
@@ -97,7 +97,6 @@ namespace WindowsGame1
 
 			// Create RenderTargets after gameData.layers is populated
 			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
-			
 			for (int i = 0; i <= gameData.layers.Count; i++) {
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
@@ -189,9 +188,9 @@ namespace WindowsGame1
 					splashDraw(gameTime);
 				break;
 			}
-			spriteBatch.Begin();
+			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 			foreach (Texture2D tex in renderTarget) {
-				spriteBatch.Draw(tex, new Vector2(0, 0), new Rectangle(0, 0, 256, 240), Color.White, 0.0f, new Vector2(0,0), 1.0f, SpriteEffects.None, 0.0f);
+				spriteBatch.Draw(tex, new Rectangle(0, 0, 1024, 960), Color.White);
 			}
 			spriteBatch.End();
 			base.Draw(gameTime);
@@ -257,14 +256,16 @@ namespace WindowsGame1
 			foreach (Layer layer in gameData.layers)
 			{
 				graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
-				spriteBatch.Begin();
+				GraphicsDevice.Clear(Color.Transparent);
+				spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
 				layer.Draw(gameTime, spriteBatch);
 				spriteBatch.End();
 			}
 
 			//walk through all the sprites and draw them
 			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
-			spriteBatch.Begin();
+			GraphicsDevice.Clear(Color.Transparent);
+			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
 			foreach (Sprite sprite in gameData.sprites)
 			{
 				Frame frame = sprite.CurFrame;
