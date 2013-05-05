@@ -111,6 +111,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationData.cs" />
     <Compile Include="Layer.cs" />
+    <Compile Include="MapLayer.cs" />
     <Compile Include="PhysicsSprite.cs" />
     <Compile Include="States\BaseState.cs" />
     <Compile Include="Audio\SfxrParams.cs" />
