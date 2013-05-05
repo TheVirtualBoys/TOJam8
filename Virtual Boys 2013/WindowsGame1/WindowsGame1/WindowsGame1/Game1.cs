@@ -98,6 +98,10 @@ namespace WindowsGame1
 			secondMap = MAPS_FOREGROUND;
 
 			pixelShiftSize = 2;
+
+            PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
+            sprite.Ani.start();
+            gameData.sprites.Add(sprite);
 		}
 
 		/// <summary>
@@ -154,7 +158,7 @@ namespace WindowsGame1
 		{
 			KeyboardState newKeyState = Keyboard.GetState();
 
-			if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
+/*			if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
 				incPixelShiftSize(-1);
 			else if (GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
 				incPixelShiftSize(1);
@@ -172,6 +176,10 @@ namespace WindowsGame1
 			{
 				audioSys.playSFX(AudioSys.Effect.SFX_LAND);
 			}
+*/
+
+            gameData.sprites[0].input( newKeyState );
+
 			oldKeyState = newKeyState;
 		}
 
@@ -200,7 +208,7 @@ namespace WindowsGame1
 			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
 			if (tileSetIndex >= 0)
 			{
-				int numRows = numScreenTilesHigh;
+                int numRows = numScreenTilesHigh;
 				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
 				for (int row = 0; row < numRows; ++row)
 				{
@@ -210,12 +218,28 @@ namespace WindowsGame1
 						TileSet tileSet = gameData.getTileSet(mapData.tileset);
 
 						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
-						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
+                        if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
 							continue;
 
+                        Color color = Color.White;
+                        if (col == numCols / 2)
+                        {
+                            int trueIndex = getMapDataTrueIndex(mapData, row, col);
+                            int boundFlags = (int)tileSet.bounds[trueIndex];
+                            if (boundFlags == 15) color = Color.Red;
+                            if (boundFlags == (int)TileSet.Bounds.BOUNDS_BOTTOM) color = Color.Green;
+/*                            if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_TOP) == 1 ) color = Color.Red;
+                            if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_RIGHT) == 1 ) color = Color.Red;
+                                case TileSet.Bounds.BOUNDS_LEFT: color = Color.Green; break;
+                                case TileSet.Bounds.BOUNDS_BOTTOM: color = Color.Blue; break;
+                                case TileSet.Bounds.BOUNDS_RIGHT: color = Color.Yellow; break;
+                                case TileSet.Bounds.BOUNDS_SLASH: color = Color.Purple; break;
+                                case TileSet.Bounds.BOUNDS_BSLASH: color = Color.Orange; break;
+                            };
+  */                      }
 						Rectangle dims = tileSet.coords[tileSetRectIndex];
 						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
+						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, color);
 					}
 				}
 			}
@@ -368,6 +392,18 @@ namespace WindowsGame1
 				index = 0;
 			return index;
 		}
+
+        public int getMapDataTrueIndex(Map mapData, int screenRow, int screenCol)
+        {
+            int col = screenCol + startingTileOffset;
+            if (col >= gameData.maps[firstMap].width)
+                col -= gameData.maps[firstMap].width;
+
+            int index = mapData.data[screenRow][col];
+            if (index < -1)
+                index = 0;
+            return index;
+        }
 
 		public void moveRightByTiles(int numTiles)
 		{

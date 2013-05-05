@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace WindowsGame1
 {
@@ -45,10 +46,12 @@ namespace WindowsGame1
 			get { return ani; }
 		}
 
-		public void update(GameTime frameTime)
+		public virtual void update(GameTime frameTime)
 		{
 			ani.update(frameTime);
 		}
+
+        public virtual void input(KeyboardState keys){} //HACKJEFFGIFFEN ugh passthrough to PhysicsSprite
 
 		public Frame CurFrame
 		{
