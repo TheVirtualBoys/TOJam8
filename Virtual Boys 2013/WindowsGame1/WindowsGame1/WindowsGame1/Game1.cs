@@ -119,6 +119,18 @@ namespace WindowsGame1
 			gameData.layers.Add(mapLayer);
 			mapLayer.setSpeed(2.25);
 
+			TileSet pipeTileSet1 = gameData.getTileSet("foreground_pipes");
+			TrainImageLayer pipeLayer1 = new TrainImageLayer(gameData, pipeTileSet1, 1 * 1000, 2 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer1);
+			pipeLayer1.setSpeed(-6);
+			pipeLayer1.FixedXOffset = gameData.ScreenWidth;
+
+			TileSet pipeTileSet2 = gameData.getTileSet("foreground_pipes");
+			TrainImageLayer pipeLayer2 = new TrainImageLayer(gameData, pipeTileSet2, 1 * 1000, 2 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer2);
+			pipeLayer2.setSpeed(-6);
+			pipeLayer2.FixedXOffset = gameData.ScreenWidth;
+
 			// Create RenderTargets after gameData.layers is populated
 			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
 			for (int i = 0; i <= gameData.layers.Count; i++) {

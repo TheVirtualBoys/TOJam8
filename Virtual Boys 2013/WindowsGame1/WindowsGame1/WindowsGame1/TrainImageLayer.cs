@@ -24,8 +24,6 @@ namespace WindowsGame1
 		 */
 		int maxMSTimeBeforeShow;
 
-		Random randGenerator;
-
 		int maxLoopCount;
 		int curLoopCount;
 
@@ -77,8 +75,6 @@ namespace WindowsGame1
 			curLoopCount = 0;
 			showImage = false;
 
-			randGenerator = new Random();
-
 			msLeftBeforeShow = getNextTime();
 		}
 
@@ -105,8 +101,6 @@ namespace WindowsGame1
 			maxLoopCount = 0;
 			curLoopCount = 0;
 			showImage = false;
-
-			randGenerator = new Random();
 
 			msLeftBeforeShow = getNextTime();
 		}
@@ -173,7 +167,7 @@ namespace WindowsGame1
 
 		private int getNextTime()
 		{
-			return randGenerator.Next(minMSTimeBeforeShow, maxMSTimeBeforeShow);
+			return gameData.randGenerator.Next(minMSTimeBeforeShow, maxMSTimeBeforeShow);
 		}
 
 		private double getNextSpeed()
@@ -189,7 +183,7 @@ namespace WindowsGame1
 				min = maxTrainSpeed;
 				max = minTrainSpeed;
 			}
-			return randGenerator.NextDouble() * (max - min) + min;
+			return gameData.randGenerator.NextDouble() * (max - min) + min;
 		}
 
 		public int LoopCount
