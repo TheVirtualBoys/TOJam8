@@ -1,8 +1,8 @@
 ; --- bitmap file ----------------------------------------
 
 #tileset
-#tstilebitmap WindowsGame1/WindowsGame1/WindowsGame1Content/<TileSetIdentifier>.bmp 320
-#end tstilebitmap
+#tilebitmap WindowsGame1/WindowsGame1/WindowsGame1Content/<TileSetIdentifier>.bmp 320
+#end tilebitmap
 #end tileset
 
 ; --------------------------------------------------------
@@ -13,8 +13,10 @@
 #tileset
 \<tileset name = "<TileSetIdentifier>" fileName = "<TileSetIdentifier>.bmp" 
 	TileWidth = "<TileWidth>" TileHeight = "<TileHeight>"
-	HorizontalTileCount = "<HorizontalTileCount>" VerticalTileCount = "<VerticalTileCount>"
-	TileCount = "<TileCount>"/\>
+	HorizontalTileCount="<HorizontalTileCount >" VerticalTileCount="<VerticalTileCount >"
+	TileCount = "<TileCount>"\>
+\</tileset>
+
 \</tilesets\>
 
 #sequence

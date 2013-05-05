@@ -34,36 +34,19 @@ namespace WindowsGame1
             get { return sm_game; }
         }   
 
-		private const int MAPS_FOREGROUND = 0;
-		private const int MAPS_BACKGROUND = 1;
-
-		private int numScreenTilesWide;
-		private int numScreenTilesHigh;
-
-		private const int tileWidth = 16;
-		private const int tileHeight = 16;
-
-		private int pixelShiftSize;
-
-		/**
-		 * The tile column offset into the current tileset
-		 */
-		int startingTileOffset;
-
-		int startingPixelOffset;
-
-		/**
-		 * The first map that is shown on the screen
-		 */
-		int firstMap;
-
-		/**
-		 * The second map that is shown beside the first map
-		 */
-		int secondMap;
+		private enum State
+		{
+			STATE_SPLASH,
+			STATE_INTRO,
+			STATE_GAMEPLAY,
+			STATE_SCORES
+		}
+		private State state = State.STATE_SPLASH;
 
 		KeyboardState oldKeyState;
 
+		//FIXME: this is temp
+		MapLayer mapLayer;
 
 		public Game1()
 		{
@@ -75,9 +58,6 @@ namespace WindowsGame1
 			Content.RootDirectory = "Content";
 			audioSys = new AudioSys();
 			gameData = new GameData();
-
-			numScreenTilesWide = graphics.PreferredBackBufferWidth / tileWidth;
-			numScreenTilesHigh = graphics.PreferredBackBufferHeight / tileHeight;
 		}
 
 		/// <summary>
@@ -90,24 +70,28 @@ namespace WindowsGame1
 		{
 			// TODO: Add your initialization logic here
 			audioSys.init();
-			audioSys.loadNSF("Content/cv3.nsf");
-			audioSys.play();
+//			audioSys.loadNSF("Content/cv3.nsf");
+//			audioSys.play();
 			gameData.init(Content);
 			base.Initialize();
 
+			gameData.ScreenWidth = graphics.PreferredBackBufferWidth;
+			gameData.ScreenHeight = graphics.PreferredBackBufferHeight;
+
 			oldKeyState = Keyboard.GetState();
 
-			startingTileOffset = 0;
-			startingPixelOffset = 0;
+			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
+			sprite.Ani.start();
+			gameData.sprites.Add(sprite);
 
-			firstMap = MAPS_FOREGROUND;
-			secondMap = MAPS_FOREGROUND;
+			TileSet bgTileSet = gameData.getTileSet("bg");
+			ImageLayer bgLayer = new ImageLayer(bgTileSet);
+			gameData.layers.Add(bgLayer);
+			bgLayer.setSpeed(-0.25);
 
-			pixelShiftSize = 2;
-
-            PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
-            sprite.Ani.start();
-            gameData.sprites.Add(sprite);
+			mapLayer = new MapLayer(gameData, 16, 16);
+			gameData.layers.Add(mapLayer);
+			mapLayer.setSpeed(2.25);
 		}
 
 		/// <summary>
@@ -145,59 +129,29 @@ namespace WindowsGame1
 				this.Exit();
 
 			// TODO: Add your update logic here
-
-			//walk through all the sprites and update them
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				sprite.update(gameTime);
-			}
-
-			base.Update(gameTime);
-
-			UpdateInput();
-
-			//moves the map by 'pixelShiftSize' pixels. to speed up or slow down, call incPixelShiftSize
-			moveRightByPixels(pixelShiftSize);
-		}
-
-		private void UpdateInput()
-		{
 			KeyboardState newKeyState = Keyboard.GetState();
-
-/*			if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
-				incPixelShiftSize(-1);
-			else if (GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
-				incPixelShiftSize(1);
-			else if (newKeyState.IsKeyDown(Keys.Left) && !oldKeyState.IsKeyDown(Keys.Left))
+			switch (state)
 			{
-				//left key was pressed
-				incPixelShiftSize(-1);
+				case State.STATE_GAMEPLAY:
+					gameplayInput(oldKeyState, newKeyState);
+					gameplayUpdate(gameTime);
+				break;
+				case State.STATE_INTRO:
+					introInput(oldKeyState, newKeyState);
+					introUpdate(gameTime);
+				break;
+				case State.STATE_SCORES:
+					scoresInput(oldKeyState, newKeyState);
+					scoresUpdate(gameTime);
+				break;
+				case State.STATE_SPLASH:
+					splashInput(oldKeyState, newKeyState);
+					splashUpdate(gameTime);
+				break;
 			}
-			else if (newKeyState.IsKeyDown(Keys.Right) && !oldKeyState.IsKeyDown(Keys.Right))
-			{
-				//right key was pressed
-				incPixelShiftSize(1);
-			}
-			else if (newKeyState.IsKeyDown(Keys.Up) && !oldKeyState.IsKeyDown(Keys.Up))
-			{
-				audioSys.playSFX(AudioSys.Effect.SFX_LAND);
-			}
-*/
-
-            gameData.sprites[0].input( newKeyState );
-
+			
+			base.Update(gameTime);
 			oldKeyState = newKeyState;
-		}
-
-		/**
-		 * Changes the pixel shift size by 'inc' (either + or -).
-		 * This makes the map scroll by faster or slower
-		 */
-		private void incPixelShiftSize(int inc)
-		{
-			pixelShiftSize += inc;
-			if (pixelShiftSize < 0)
-				pixelShiftSize = 0;
 		}
 
 		/// <summary>
@@ -209,30 +163,87 @@ namespace WindowsGame1
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
 			// TODO: Add your drawing code here
+			switch (state)
+			{
+				case State.STATE_GAMEPLAY:
+					gameplayDraw(gameTime);
+				break;
+				case State.STATE_INTRO:
+					introDraw(gameTime);
+				break;
+				case State.STATE_SCORES:
+					scoresDraw(gameTime);
+				break;
+				case State.STATE_SPLASH:
+					splashDraw(gameTime);
+				break;
+			}
+			base.Draw(gameTime);
+		}
+
+		public void gameplayUpdate(GameTime gameTime)
+		{
+			//walk through and update all layers
+			foreach (Layer layer in gameData.layers)
+			{
+				layer.Update(gameTime);
+			}
+
+			//walk through all the sprites and update them
+			foreach (Sprite sprite in gameData.sprites)
+			{
+				sprite.update(gameTime);
+			}
+
+		}
+
+		public void introUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void scoresUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void splashUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			gameData.sprites[0].input(newKeyState);
+		}
+
+		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_GAMEPLAY;
+		}
+
+		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			// wait for any input, then return to intro state
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+		}
+
+		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+		}
+
+		public void gameplayDraw(GameTime gameTime)
+		{
 			spriteBatch.Begin();
 
-			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
-			if (tileSetIndex >= 0)
+			//walk through and draw all layers
+			foreach (Layer layer in gameData.layers)
 			{
-                int numRows = numScreenTilesHigh;
-				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
-				for (int row = 0; row < numRows; ++row)
-				{
-					for (int col = 0; col < numCols; ++col)
-					{
-						Map mapData = getMapData(row, col);
-						TileSet tileSet = gameData.getTileSet(mapData.tileset);
-
-						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
-                        if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
-							continue;
-
-						Rectangle dims = tileSet.coords[tileSetRectIndex];
-						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
-					}
-				}
+				layer.Draw(gameTime, spriteBatch);
 			}
+
+
 
 			//walk through all the sprites and draw them
 			foreach (Sprite sprite in gameData.sprites)
@@ -252,26 +263,26 @@ namespace WindowsGame1
 
 					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
 				}
-				
+
 			}
 
 			spriteBatch.End();
-			base.Draw(gameTime);
 		}
 
-		public void moveRightByPixels(int numPixels)
+		public void introDraw(GameTime gameTime)
 		{
-			startingPixelOffset += numPixels;
 
-			if (startingPixelOffset >= tileWidth)
-			{
-				int numTiles = startingPixelOffset / tileWidth;
-				startingPixelOffset = startingPixelOffset % tileWidth;
-
-				moveRightByTiles(numTiles);
-			}
 		}
 
+		public void scoresDraw(GameTime gameTime)
+		{
+
+		}
+
+		public void splashDraw(GameTime gameTime)
+		{
+
+		}
 		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY)
 		{
 			//defaults
@@ -311,12 +322,13 @@ namespace WindowsGame1
 
 			while (true)
 			{
-                int row, col;
-                convertScreenPxToTile(x0, y0, out row, out col);
-                Map mapData = getAbsoluteMapData(row, col);
+				int row, col;
+                mapLayer.convertScreenPxToTile(x0, y0, out row, out col);
+                Map mapData = mapLayer.getAbsoluteMapData(row, col);
                 TileSet tileSet = gameData.getTileSet(mapData.tileset);
-                bounds = getMapTileBounds(x0, y0, mapData, tileSet);
-				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
+				//FIXME: mapLayer here is local and probably shouldn't be
+                bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
+                if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
 					boundsX = x0;
 					boundsY = y0;
@@ -339,110 +351,6 @@ namespace WindowsGame1
 			}
 
 			return bounds;
-		}
-
-		private TileSet.Bounds getMapTileBounds(int px, int py, Map mapData, TileSet tileSet)
-		{
-			TileSet.Bounds bounds = TileSet.Bounds.BOUNDS_NONE;
-
-			//get the tile position for the pixel coords
-			int row, col;
-			convertScreenPxToTile(px, py, out row, out col);
-            row %= mapData.height;
-            col %= mapData.width;
-
-			//get the bounds for the tile
-			int tileTypeIndex = mapData.data[row][col];
-			bounds = tileSet.bounds[tileTypeIndex];
-
-			return bounds;
-		}
-
-		public Map getMapData(int screenRow, int screenCol)
-		{
-			int index = getMapDataIndex(screenRow, screenCol);
-			return (index >= 0) ? gameData.maps[index] : null;
-		}
-
-        public Map getAbsoluteMapData(int absoluteScreenRow, int absoluteScreenCol)
-        {
-            int index = getMapDataIndex(absoluteScreenRow, absoluteScreenCol - startingTileOffset);
-            return (index >= 0) ? gameData.maps[index] : null;
-        }
-
-		public int getMapDataIndex(int screenRow, int screenCol)
-		{
-			int col = screenCol + startingTileOffset;
-
-			int mapIndex;
-			if (col < gameData.maps[firstMap].width)
-				mapIndex = firstMap;
-			else
-				mapIndex = secondMap;
-
-			return mapIndex;
-		}
-
-		public int getMapDataRectIndex(Map mapData, int screenRow, int screenCol)
-		{
-			int col = screenCol + startingTileOffset;
-			if (col >= gameData.maps[firstMap].width)
-				col -= gameData.maps[firstMap].width;
-
-			int index = mapData.data[screenRow][col] - 1;
-			if (index < -1)
-				index = 0;
-			return index;
-		}
-
-        public int getMapDataTrueIndex(Map mapData, int screenRow, int screenCol)
-        {
-            int col = screenCol + startingTileOffset;
-            if (col >= gameData.maps[firstMap].width)
-                col -= gameData.maps[firstMap].width;
-
-            int index = mapData.data[screenRow][col];
-            if (index < -1)
-                index = 0;
-            return index;
-        }
-
-		public void moveRightByTiles(int numTiles)
-		{
-			startingTileOffset += numTiles;
-
-			if (startingTileOffset >= gameData.maps[firstMap].width)
-			{
-				//completely moved past the first map, so shift things
-				startingTileOffset -= gameData.maps[firstMap].width;
-				firstMap = secondMap;
-				secondMap = getNextMap();
-			}
-		}
-
-		/**
-		 * Gives the screen pixel of the top-left corner of the tile
-		 */
-		private void convertTileToScreenPx(int row, int col, out int pX, out int pY)
-		{
-			pX = (col - startingTileOffset) * tileWidth - startingPixelOffset;
-			pY = row * tileHeight;
-		}
-
-		private void convertScreenPxToTile(int pX, int pY, out int row, out int col)
-		{
-            col = (pX + startingTileOffset * tileWidth + startingPixelOffset) / tileWidth;
-			row = pY / tileHeight;
-		}
-
-
-		/**
-		 * Returns the map index for the next map to be used
-		 */
-		private int getNextMap()
-		{
-			//TODO: should probably pick a random mapset next
-			return MAPS_FOREGROUND;
 		}
 	}
 }

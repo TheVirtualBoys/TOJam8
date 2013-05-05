@@ -49,10 +49,15 @@ namespace WindowsGame1
 
 		public List<Sprite> sprites = new List<Sprite>();
 
+		public List<Layer> layers = new List<Layer>();
+
 		/**
 		 * A map of all the loaded textures. asset name -> texture
 		 */
 		public Dictionary<string, Texture2D> loadedTextures = new Dictionary<string, Texture2D>();
+
+		int screenWidth;
+		int screenHeight;
 
 
 		public GameData()
@@ -66,6 +71,18 @@ namespace WindowsGame1
 			animations.Clear();
 
 			sprites.Clear();
+		}
+
+		public int ScreenHeight
+		{
+			get { return screenHeight; }
+			set { screenHeight = value; }
+		}
+
+		public int ScreenWidth
+		{
+			get { return screenWidth; }
+			set { screenWidth = value; }
 		}
 
 		private Texture2D loadTexture(ContentManager content, string assetName)
@@ -166,12 +183,12 @@ namespace WindowsGame1
 				int vCount = (int)set.Attribute("VerticalTileCount");
 				s.count = (int)set.Attribute("TileCount");
 				int k = 0;
-				for (int i = 0; i < hCount; i++)
+				for (int i = 0; i < vCount; i++)
 				{
-					for (int j = 0; j < vCount; j++)
+					for (int j = 0; j < hCount; j++)
 					{
 						if (k++ > s.count) break;
-						s.coords.Add(new Rectangle(i * s.width, j * s.height, s.width, s.height));
+						s.coords.Add(new Rectangle(j * s.width, i * s.height, s.width, s.height));
 					}
 				}
 				tileSets.Add(s);
@@ -259,6 +276,7 @@ namespace WindowsGame1
 			if (!tileSetNameIdMap.TryGetValue(tileSetName, out outIndex))
 			{
 				System.Console.Error.WriteLine("Couldn't find the tileset: " + tileSetName);
+				outIndex = -1;
 			}
 
 			return outIndex;
