@@ -29,21 +29,7 @@ namespace WindowsGame1
 		{
 			foreach (Sprite sprite in gameData.sprites)
 			{
-				Frame frame = sprite.CurFrame;
-				if (frame == null)
-					continue;
-
-				int numComponents = frame.NumComponents;
-				for (int i = 0; i < numComponents; ++i)
-				{
-					FrameComponent component = frame.getComponent(i);
-					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
-					Rectangle tileDims = component.getTileRect(tileSet);
-
-					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
-
-					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
-				}
+				sprite.draw(gameTime, spriteBatch);
 			}
 		}
 
