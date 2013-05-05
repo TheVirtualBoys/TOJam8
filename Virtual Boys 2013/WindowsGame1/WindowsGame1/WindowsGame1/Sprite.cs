@@ -10,9 +10,10 @@ namespace WindowsGame1
 {
 	public class Sprite
 	{
-		private Animation ani;
+		protected Animation ani;
 		private int left;
 		private int top;
+        protected Color m_color;
 
 		public Sprite(Animation ani)
 		{
@@ -20,6 +21,7 @@ namespace WindowsGame1
 
 			left = 0;
 			top = 0;
+            m_color = Color.White;
 		}
 
 		public Sprite(AnimationData aniData)
@@ -28,6 +30,7 @@ namespace WindowsGame1
 
 			left = 0;
 			top = 0;
+            m_color = Color.White;
 		}
 
 		public int Left
@@ -80,7 +83,7 @@ namespace WindowsGame1
 
 		public virtual Color getFilterColour()
 		{
-			return Color.White;
+            return m_color;
 		}
 	}
 }

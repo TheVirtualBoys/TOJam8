@@ -56,6 +56,7 @@ namespace WindowsGame1
 		KeyboardState oldKeyState, newKeyState;
 		GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
+		Texture2D titleScreen;
 		Song music;
 		SpriteFont font;
 		int score;
@@ -162,6 +163,7 @@ namespace WindowsGame1
 
 			// TODO: use this.Content to load your game content here
 			music = Content.Load<Song>("OFalconer-80sSciFi");
+			titleScreen = Content.Load<Texture2D>("title.png");
 			//audioSys.loadNSF("Content/cv3.nsf");
 			//audioSys.play();
 		}
@@ -279,38 +281,50 @@ namespace WindowsGame1
 			
 		}
 
-        public bool keyPressed(Keys key)
-        {
-            return (!oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
-        }
+		public bool keyPressed(Keys key)
+		{
+			return (!oldKeyState.IsKeyDown(key) && newKeyState.IsKeyDown(key));
+		}
 
-        public bool keyPressed(int player, Buttons key)
-        {
+		public bool keyReleased(Keys key)
+		{
+			return (oldKeyState.IsKeyDown(key) && !newKeyState.IsKeyDown(key));
+		}
+
+		public bool keyPressed(int player, Buttons key)
+		{
 			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
 				return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
 			return false;
-        }
+		}
+
+		public bool keyReleased(int player, Buttons key)
+		{
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (oldPadState[player].IsButtonDown(key) && !newPadState[player].IsButtonDown(key));
+			return false;
+		}
 
 		public void gameplayInput()
 		{
 			gameData.sprites[0].input(newKeyState);
-            if (keyPressed(Keys.Q) || keyPressed(0, Buttons.Back) || keyPressed(1, Buttons.Back)) setState(State.STATE_SCORES);
+			if (keyPressed(Keys.Q) || keyPressed(0, Buttons.Back) || keyPressed(1, Buttons.Back)) setState(State.STATE_SCORES);
 		}
 
 		public void introInput()
 		{
-            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
 		}
 
 		public void scoresInput()
 		{
 			// wait for any input, then return to intro state
-            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
 		}
 
 		public void splashInput()
 		{
-            if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
+			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
 		}
 
 		public void gameplayDraw(GameTime gameTime)
@@ -336,17 +350,19 @@ namespace WindowsGame1
 
 		public void introDraw(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void scoresDraw(GameTime gameTime)
 		{
-
+			
 		}
 
 		public void splashDraw(GameTime gameTime)
 		{
-
+			spriteBatch.Begin();
+			spriteBatch.Draw(titleScreen, new Rectangle(0, 0, 1024, 960), Color.White);
+			spriteBatch.End();
 		}
 		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY)
 		{
