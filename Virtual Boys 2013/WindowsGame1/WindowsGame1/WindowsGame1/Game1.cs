@@ -192,76 +192,21 @@ namespace WindowsGame1
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
 			// TODO: Add your drawing code here
-			spriteBatch.Begin();
-
-			//walk through and draw all layers
-			foreach (Layer layer in gameData.layers)
+			switch (state)
 			{
-				layer.Draw(gameTime, spriteBatch);
+				case State.STATE_GAMEPLAY:
+					gameplayDraw(gameTime);
+				break;
+				case State.STATE_INTRO:
+					introDraw(gameTime);
+				break;
+				case State.STATE_SCORES:
+					scoresDraw(gameTime);
+				break;
+				case State.STATE_SPLASH:
+					splashDraw(gameTime);
+				break;
 			}
-
-
-			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
-			if (tileSetIndex >= 0)
-			{
-				int numRows = numScreenTilesHigh;
-				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
-				for (int row = 0; row < numRows; ++row)
-				{
-					for (int col = 0; col < numCols; ++col)
-					{
-						Map mapData = getMapData(row, col);
-						TileSet tileSet = gameData.getTileSet(mapData.tileset);
-
-						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
-						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
-							continue;
-
-						Color color = Color.White;
-						if (col == numCols / 2)
-						{
-							int trueIndex = getMapDataTrueIndex(mapData, row, col);
-							int boundFlags = (int)tileSet.bounds[trueIndex];
-							if (boundFlags == 15) color = Color.Red;
-							if (boundFlags == (int)TileSet.Bounds.BOUNDS_BOTTOM) color = Color.Green;
-/*							if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_TOP) == 1 ) color = Color.Red;
-							if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_RIGHT) == 1 ) color = Color.Red;
-								case TileSet.Bounds.BOUNDS_LEFT: color = Color.Green; break;
-								case TileSet.Bounds.BOUNDS_BOTTOM: color = Color.Blue; break;
-								case TileSet.Bounds.BOUNDS_RIGHT: color = Color.Yellow; break;
-								case TileSet.Bounds.BOUNDS_SLASH: color = Color.Purple; break;
-								case TileSet.Bounds.BOUNDS_BSLASH: color = Color.Orange; break;
-							};
-	*/					}
-						Rectangle dims = tileSet.coords[tileSetRectIndex];
-						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, color);
-					}
-				}
-			}
-
-			//walk through all the sprites and draw them
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				Frame frame = sprite.CurFrame;
-				if (frame == null)
-					continue;
-
-				int numComponents = frame.NumComponents;
-				for (int i = 0; i < numComponents; ++i)
-				{
-					FrameComponent component = frame.getComponent(i);
-					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
-					Rectangle tileDims = component.getTileRect(tileSet);
-
-					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
-
-					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
-				}
-				
-			}
-
-			spriteBatch.End();
 			base.Draw(gameTime);
 		}
 
@@ -330,6 +275,96 @@ namespace WindowsGame1
 		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState)
 		{
 			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+		}
+
+		public void gameplayDraw(GameTime gameTime)
+		{
+			spriteBatch.Begin();
+
+			//walk through and draw all layers
+			foreach (Layer layer in gameData.layers)
+			{
+				layer.Draw(gameTime, spriteBatch);
+			}
+
+
+			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
+			if (tileSetIndex >= 0)
+			{
+				int numRows = numScreenTilesHigh;
+				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
+				for (int row = 0; row < numRows; ++row)
+				{
+					for (int col = 0; col < numCols; ++col)
+					{
+						Map mapData = getMapData(row, col);
+						TileSet tileSet = gameData.getTileSet(mapData.tileset);
+
+						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
+						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
+							continue;
+
+						Color color = Color.White;
+						if (col == numCols / 2)
+						{
+							int trueIndex = getMapDataTrueIndex(mapData, row, col);
+							int boundFlags = (int)tileSet.bounds[trueIndex];
+							if (boundFlags == 15) color = Color.Red;
+							if (boundFlags == (int)TileSet.Bounds.BOUNDS_BOTTOM) color = Color.Green;
+							/*							if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_TOP) == 1 ) color = Color.Red;
+														if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_RIGHT) == 1 ) color = Color.Red;
+															case TileSet.Bounds.BOUNDS_LEFT: color = Color.Green; break;
+															case TileSet.Bounds.BOUNDS_BOTTOM: color = Color.Blue; break;
+															case TileSet.Bounds.BOUNDS_RIGHT: color = Color.Yellow; break;
+															case TileSet.Bounds.BOUNDS_SLASH: color = Color.Purple; break;
+															case TileSet.Bounds.BOUNDS_BSLASH: color = Color.Orange; break;
+														};
+								*/
+						}
+						Rectangle dims = tileSet.coords[tileSetRectIndex];
+						//NOTE: row * dims.Height only works if ALL tiles have the same height
+						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, color);
+					}
+				}
+			}
+
+			//walk through all the sprites and draw them
+			foreach (Sprite sprite in gameData.sprites)
+			{
+				Frame frame = sprite.CurFrame;
+				if (frame == null)
+					continue;
+
+				int numComponents = frame.NumComponents;
+				for (int i = 0; i < numComponents; ++i)
+				{
+					FrameComponent component = frame.getComponent(i);
+					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
+					Rectangle tileDims = component.getTileRect(tileSet);
+
+					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
+
+					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
+				}
+
+			}
+
+			spriteBatch.End();
+		}
+
+		public void introDraw(GameTime gameTime)
+		{
+
+		}
+
+		public void scoresDraw(GameTime gameTime)
+		{
+
+		}
+
+		public void splashDraw(GameTime gameTime)
+		{
+
 		}
 
 		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY, Map mapData, TileSet tileSet)
