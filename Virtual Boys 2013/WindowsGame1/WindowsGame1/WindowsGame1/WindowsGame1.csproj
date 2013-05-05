@@ -110,13 +110,9 @@
     <Compile Include="Audio\AudioSys.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationData.cs" />
-<<<<<<< HEAD
     <Compile Include="PhysicsSprite.cs" />
-    <Compile Include="SfxrParams.cs" />
-=======
     <Compile Include="States\BaseState.cs" />
     <Compile Include="Audio\SfxrParams.cs" />
->>>>>>> 65efbed419951c1d721c879e0a315566b9a399ae
     <Compile Include="Sprite.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="FrameComponent.cs" />
