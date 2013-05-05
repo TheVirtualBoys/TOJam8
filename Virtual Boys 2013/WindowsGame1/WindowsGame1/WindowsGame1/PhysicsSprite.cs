@@ -141,6 +141,11 @@ namespace WindowsGame1
             return pastCollides | collided;
         }
 
+		public void toggleGlowType()
+		{
+			PlayerGlowType = (PlayerGlowType == GlowType.Red_Glow) ? GlowType.Blue_Glow : GlowType.Red_Glow;
+		}
+
         public override void update(GameTime frameTime)
         {
             base.update(frameTime);
@@ -170,6 +175,7 @@ namespace WindowsGame1
             if (position.Y + height >= 240)
             {
                 killVeloY = true;
+				toggleGlowType();
                 position.Y = 239 - height;
             }
 
@@ -188,6 +194,7 @@ namespace WindowsGame1
                 if (collide)
                 {
                     killVeloY = true;
+					toggleGlowType();
                     position.Y = (float)minY;
 
                 }
