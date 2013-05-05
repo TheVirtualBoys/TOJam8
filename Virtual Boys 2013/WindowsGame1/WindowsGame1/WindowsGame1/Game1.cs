@@ -40,6 +40,7 @@ namespace WindowsGame1
 
 		KeyboardState oldKeyState;
 		GamePadState[] oldPadState;
+		RenderTarget2D[] renderTarget;
 
 		//FIXME: this is temp
 		MapLayer mapLayer;
@@ -49,6 +50,8 @@ namespace WindowsGame1
 			graphics = new GraphicsDeviceManager(this);
 			graphics.PreferredBackBufferWidth = 256;
 			graphics.PreferredBackBufferHeight = 240;
+			//graphics.PreferredBackBufferWidth = 1024;
+			//graphics.PreferredBackBufferHeight = 960;
 			graphics.ApplyChanges();
 			Content.RootDirectory = "Content";
 			audioSys = new AudioSys();
@@ -65,8 +68,7 @@ namespace WindowsGame1
 		{
 			// TODO: Add your initialization logic here
 			audioSys.init();
-			audioSys.loadNSF("Content/cv3.nsf");
-			audioSys.play();
+			
 			gameData.init(Content);
 			base.Initialize();
 
@@ -87,6 +89,13 @@ namespace WindowsGame1
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
 			mapLayer.setSpeed(2.25);
+
+			// Create RenderTargets after gameData.layers is populated
+			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
+			
+			for (int i = 0; i <= gameData.layers.Count; i++) {
+				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
+			}
 		}
 
 		/// <summary>
@@ -175,6 +184,11 @@ namespace WindowsGame1
 					splashDraw(gameTime);
 				break;
 			}
+			spriteBatch.Begin();
+			foreach (Texture2D tex in renderTarget) {
+				spriteBatch.Draw(tex, new Vector2(0, 0), new Rectangle(0, 0, 256, 240), Color.White, 0.0f, new Vector2(0,0), 1.0f, SpriteEffects.None, 0.0f);
+			}
+			spriteBatch.End();
 			base.Draw(gameTime);
 		}
 
@@ -233,17 +247,19 @@ namespace WindowsGame1
 
 		public void gameplayDraw(GameTime gameTime)
 		{
-			spriteBatch.Begin();
-
 			//walk through and draw all layers
+			int target = 0;
 			foreach (Layer layer in gameData.layers)
 			{
+				graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+				spriteBatch.Begin();
 				layer.Draw(gameTime, spriteBatch);
+				spriteBatch.End();
 			}
 
-
-
 			//walk through all the sprites and draw them
+			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+			spriteBatch.Begin();
 			foreach (Sprite sprite in gameData.sprites)
 			{
 				Frame frame = sprite.CurFrame;
@@ -263,8 +279,8 @@ namespace WindowsGame1
 				}
 
 			}
-
 			spriteBatch.End();
+			graphics.GraphicsDevice.SetRenderTarget(null);
 		}
 
 		public void introDraw(GameTime gameTime)
