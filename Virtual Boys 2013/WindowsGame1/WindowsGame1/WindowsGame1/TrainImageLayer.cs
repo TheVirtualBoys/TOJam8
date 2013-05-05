@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace WindowsGame1
 {
-	public class TimedImageLayer : Layer
+	public class TrainImageLayer : Layer
 	{
 		/**
 		 * the number of milliseconds left before we show the image again
@@ -46,14 +46,19 @@ namespace WindowsGame1
 
 		GameData gameData;
 
+		double minTrainSpeed;
+		double maxTrainSpeed;
+
 
 		/**
 		 * Creates a new ImageLayer with the assumption that the tileset only contains 1 image
 		 */
-		public TimedImageLayer(GameData gameData, TileSet tileSet, int minMSTimeBeforeShow, int maxMSTimeBeforeShow)
+		public TrainImageLayer(GameData gameData, TileSet tileSet, int minMSTimeBeforeShow, int maxMSTimeBeforeShow, double minTrainSpeed, double maxTrainSpeed)
 		{
 			this.minMSTimeBeforeShow = minMSTimeBeforeShow;
 			this.maxMSTimeBeforeShow = maxMSTimeBeforeShow;
+			this.minTrainSpeed = minTrainSpeed;
+			this.maxTrainSpeed = maxTrainSpeed;
 
 			this.tileSet = tileSet;
 			this.imageIndex = 0;
@@ -77,10 +82,12 @@ namespace WindowsGame1
 			msLeftBeforeShow = getNextTime();
 		}
 
-		public TimedImageLayer(GameData gameData, TileSet tileSet, int imageIndex, int minMSTimeBeforeShow, int maxMSTimeBeforeShow)
+		public TrainImageLayer(GameData gameData, TileSet tileSet, int imageIndex, int minMSTimeBeforeShow, int maxMSTimeBeforeShow, double minTrainSpeed, double maxTrainSpeed)
 		{
 			this.minMSTimeBeforeShow = minMSTimeBeforeShow;
 			this.maxMSTimeBeforeShow = maxMSTimeBeforeShow;
+			this.minTrainSpeed = minTrainSpeed;
+			this.maxTrainSpeed = maxTrainSpeed;
 
 			this.tileSet = tileSet;
 			this.imageIndex = imageIndex;
@@ -110,6 +117,7 @@ namespace WindowsGame1
 			showImage = true;
 			msLeftBeforeShow = 0;
 			curLoopCount = maxLoopCount;
+			setSpeed(getNextSpeed());
 			reset();
 		}
 
@@ -134,11 +142,8 @@ namespace WindowsGame1
 
 				xOffset += pxShiftSize;
 
-				xOffset %= tileSet.coords[imageIndex].Width + gameData.ScreenWidth;
-
-
-				//check if we just looped
-				if (DynamicXOffset == 0)
+				//check if we just finished
+				if (Math.Abs(xOffset) >= tileSet.coords[imageIndex].Width + gameData.ScreenWidth)
 				{
 					if (--curLoopCount < 0)
 					{
@@ -169,6 +174,22 @@ namespace WindowsGame1
 		private int getNextTime()
 		{
 			return randGenerator.Next(minMSTimeBeforeShow, maxMSTimeBeforeShow);
+		}
+
+		private double getNextSpeed()
+		{
+			double min, max;
+			if (minTrainSpeed < maxTrainSpeed)
+			{
+				min = minTrainSpeed;
+				max = maxTrainSpeed;
+			}
+			else
+			{
+				min = maxTrainSpeed;
+				max = minTrainSpeed;
+			}
+			return randGenerator.NextDouble() * (max - min) + min;
 		}
 
 		public int LoopCount
@@ -216,6 +237,11 @@ namespace WindowsGame1
 		{
 			get { return yOffset; }
 			set { yOffset = value; }
+		}
+
+		public bool TrainRunning
+		{
+			get { return showImage; }
 		}
 	}
 }
