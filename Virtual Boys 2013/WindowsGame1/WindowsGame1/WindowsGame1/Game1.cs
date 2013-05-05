@@ -28,7 +28,7 @@ namespace WindowsGame1
 			get { return sm_game; }
 		}
 
-		private enum State
+		public enum State
 		{
 			STATE_SPLASH,
 			STATE_INTRO,
@@ -36,7 +36,7 @@ namespace WindowsGame1
 			STATE_SCORES
 		}
 		private State state;
-		private void setState(State newState)
+		public void setState(State newState)
 		{
 			state = newState;
 			foreach (RenderTarget2D tex in renderTarget) {

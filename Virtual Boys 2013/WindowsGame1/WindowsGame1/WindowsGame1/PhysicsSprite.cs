@@ -19,6 +19,8 @@ namespace WindowsGame1
         double m_jumpAccelTime;
         bool m_jumping;
         int lastAniIndex;
+        double m_dyingTimer;
+        const double m_deathTime = 2.5;
 
 		public enum PlayerType
 		{
@@ -58,6 +60,7 @@ namespace WindowsGame1
                 m_jumping = true; //flying start
                 lastAniIndex = -1; //set impossible state for refresh
 				glowType = PhysicsSprite.GlowType.Red_Glow;
+                m_dyingTimer = 0.0;
             }
 
 		public PlayerType PlayerId
@@ -158,130 +161,148 @@ namespace WindowsGame1
             base.update(frameTime);
 
             float dt = (float)(frameTime.ElapsedGameTime.Seconds + frameTime.ElapsedGameTime.Milliseconds * 0.001);
-            m_velocity += m_acceleration * dt;
-            Vector2 position = m_position + m_velocity * dt;
-            m_lastDelta = dt;
 
-            bool killVeloX = false;
-            bool killVeloY = false;
-            if (position.X < 0)
+            int newAniIndex = ANI_IDLE;
+            if (m_dyingTimer > 0)
             {
-                killVeloX = true;
-                position.X = 0;
-            }
-            if (position.X + width >= 256)
-            {
-                killVeloX = true;
-                position.X = 255 - width;
-            }
-            if (position.Y < 0)
-            {
-                killVeloY = true;
-                position.Y = 0;
-            }
-            if (position.Y + height >= 240)
-            {
-                killVeloY = true;
-				toggleGlowType();
-                position.Y = 239 - height;
-            }
-
-            //downward checks (left middle right)
-            {
-                double minY = 240;
-                bool collide = false;
-                float insideHeight = height - 1;
-                Vector2 insideLeftBotOffset = new Vector2(0, insideHeight);
-                Vector2 insideMidBotOffset = new Vector2(width / 2, insideHeight);
-                Vector2 insideRightBotOffset = new Vector2(width - 1, insideHeight);
-//                collide = CollisionDownHelper(collide, insideLeftBotOffset, position, minY, out minY);
-                collide = CollisionDownHelper(collide, insideMidBotOffset, position, minY, out minY);
-                collide = CollisionDownHelper(collide, insideRightBotOffset, position, minY, out minY);
-                minY -= insideHeight + 1;
-                if (collide)
+                newAniIndex = ANI_DIE;
+                m_dyingTimer -= dt;
+                byte lum = (byte)(255 * m_dyingTimer / m_deathTime);
+                m_color.R = m_color.G = m_color.B = lum;
+                if ( m_dyingTimer <=  0.0 )
                 {
-                    killVeloY = true;
-					position.Y = Math.Max(0, (float)minY);					toggleGlowType();
+                    m_dyingTimer = 0.0;
+                    Game1.Instance.setState(Game1.State.STATE_SCORES);
                 }
             }
-            //up checks (left, middle, right)
+            else
             {
-                double maxY = 0;
-                bool collide = false;
-                Vector2 insideLeftTopOffset = new Vector2(0, 0);
-                Vector2 insideMidTopOffset = new Vector2(width / 2, 0);
-                Vector2 insideRightTopOffset = new Vector2(width - 1, 0);
-                collide = CollisionUpHelper(collide, insideLeftTopOffset, position, maxY, out maxY);
-                collide = CollisionUpHelper(collide, insideMidTopOffset, position, maxY, out maxY);
-                collide = CollisionUpHelper(collide, insideRightTopOffset, position, maxY, out maxY);
-                if (collide)
+                m_velocity += m_acceleration * dt;
+                Vector2 position = m_position + m_velocity * dt;
+                m_lastDelta = dt;
+
+                bool killVeloX = false;
+                bool killVeloY = false;
+                if (position.X < 0)
+                {
+                    killVeloX = true;
+                    position.X = 0;
+                }
+                if (position.X + width >= 256)
+                {
+                    killVeloX = true;
+                    position.X = 255 - width;
+                }
+                if (position.Y < 0)
                 {
                     killVeloY = true;
-                    position.Y = Math.Min(239 - height, (float)maxY + 1 );
+                    position.Y = 0;
                 }
-            }
-
-            //fwd checks (in quarters top to bottom)
-            {
-                bool collide = false, isSlash = false, isBSlash = false;
-                float insideWidth = width - 1;
-                double minY = 240;
-                Vector2 insideRight0Offset = new Vector2(insideWidth, 0);
-                Vector2 insideRight1Offset = new Vector2(insideWidth, height / 3);
-                Vector2 insideRight2Offset = new Vector2(insideWidth, 2 * height / 3);
-                Vector2 insideRight3Offset = new Vector2(insideWidth, height - 1);
-                double fakeY = 240;
-                collide = CollisionRightHelper(collide, insideRight0Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight1Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight2Offset, position, minY, out minY, isSlash, out isSlash, isBSlash, out isBSlash);
-                collide = CollisionRightHelper(collide, insideRight3Offset, position, minY, out minY, isSlash, out isSlash, isBSlash, out isBSlash);
-                if (collide)
+                if (position.Y + height >= 240)
                 {
-                    minY -= height; //wrong for all but last who cares
-                    if (isSlash || isBSlash) //slide
+                    killVeloY = true;
+                    toggleGlowType();
+                    position.Y = 239 - height;
+                }
+
+                //downward checks (left middle right)
+                {
+                    double minY = 240;
+                    bool collide = false;
+                    float insideHeight = height - 1;
+                    Vector2 insideLeftBotOffset = new Vector2(0, insideHeight);
+                    Vector2 insideMidBotOffset = new Vector2(width / 2, insideHeight);
+                    Vector2 insideRightBotOffset = new Vector2(width - 1, insideHeight);
+                    //                collide = CollisionDownHelper(collide, insideLeftBotOffset, position, minY, out minY);
+                    collide = CollisionDownHelper(collide, insideMidBotOffset, position, minY, out minY);
+                    collide = CollisionDownHelper(collide, insideRightBotOffset, position, minY, out minY);
+                    minY -= insideHeight + 1;
+                    if (collide)
                     {
-                        position.Y = Math.Min(239 - height, (float)minY - 3);
+                        killVeloY = true;
+                        position.Y = Math.Max(0, (float)minY); toggleGlowType();
                     }
-                    else
+                }
+                //up checks (left, middle, right)
+                {
+                    double maxY = 0;
+                    bool collide = false;
+                    Vector2 insideLeftTopOffset = new Vector2(0, 0);
+                    Vector2 insideMidTopOffset = new Vector2(width / 2, 0);
+                    Vector2 insideRightTopOffset = new Vector2(width - 1, 0);
+                    collide = CollisionUpHelper(collide, insideLeftTopOffset, position, maxY, out maxY);
+                    collide = CollisionUpHelper(collide, insideMidTopOffset, position, maxY, out maxY);
+                    collide = CollisionUpHelper(collide, insideRightTopOffset, position, maxY, out maxY);
+                    if (collide)
                     {
-                        killVeloX = true;
-                        m_color = Color.Red;
+                        killVeloY = true;
+                        position.Y = Math.Min(239 - height, (float)maxY + 1);
                     }
+                }
+
+                //fwd checks (in quarters top to bottom)
+                {
+                    bool collide = false, isSlash = false, isBSlash = false;
+                    float insideWidth = width - 1;
+                    double minY = 240;
+                    Vector2 insideRight0Offset = new Vector2(insideWidth, 0);
+                    Vector2 insideRight1Offset = new Vector2(insideWidth, height / 3);
+                    Vector2 insideRight2Offset = new Vector2(insideWidth, 2 * height / 3);
+                    Vector2 insideRight3Offset = new Vector2(insideWidth, height - 1);
+                    double fakeY = 240;
+                    collide = CollisionRightHelper(collide, insideRight0Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
+                    collide = CollisionRightHelper(collide, insideRight1Offset, position, fakeY, out fakeY, isSlash, out isSlash, isBSlash, out isBSlash);
+                    collide = CollisionRightHelper(collide, insideRight2Offset, position, minY, out minY, isSlash, out isSlash, isBSlash, out isBSlash);
+                    collide = CollisionRightHelper(collide, insideRight3Offset, position, minY, out minY, isSlash, out isSlash, isBSlash, out isBSlash);
+                    if (collide)
+                    {
+                        minY -= height; //wrong for all but last who cares
+                        if (isSlash || isBSlash) //slide
+                        {
+                            position.Y = Math.Min(239 - height, (float)minY - 3);
+                        }
+                        else
+                        {
+                            killVeloX = true;
+                            //m_color = Color.Red;
+                            m_dyingTimer = m_deathTime;
+                            foreach (Layer layer in Game1.Instance.gameData.layers)
+                            {
+                                layer.setSpeed(0.0);
+                            }
+                        }
+                    }
+                    /*else
+                    {
+                        m_color = Color.White;
+                    }
+                    */
+                }
+
+
+                if (killVeloX) m_velocity.X = 0;
+                if (killVeloY) m_velocity.Y = 0;
+
+                m_position = position;
+
+                //patch back the info
+                Left = (int)m_position.X;
+                Top = (int)m_position.Y;
+
+                if (m_velocity.Y != 0.0)
+                {
+                    double threshold = 120;
+                    if (m_velocity.Y < -threshold) newAniIndex = ANI_JUMP_LEAP;
+                    else if (m_velocity.Y >= -threshold && m_velocity.Y < threshold)
+                    {
+                        newAniIndex = ANI_JUMP_HANG;
+                    }
+                    else newAniIndex = ANI_JUMP_DROP;
                 }
                 else
                 {
-                    m_color = Color.White;
+                    newAniIndex = ANI_RUN;
                 }
-             /*   if ( isSlash )
-                {
-                    position.X = 
-                */
-            }
-
-
-            if (killVeloX) m_velocity.X = 0;
-            if (killVeloY) m_velocity.Y = 0;
-
-            m_position = position;
-            
-            //patch back the info
-            Left = (int)m_position.X;
-            Top = (int)m_position.Y;
-
-            int newAniIndex = ANI_IDLE;
-            if (m_velocity.Y != 0.0)
-            {
-                double threshold = 120;
-                if (m_velocity.Y < -threshold) newAniIndex = ANI_JUMP_LEAP;
-                else if (m_velocity.Y >= -threshold && m_velocity.Y < threshold)
-                {
-                    newAniIndex = ANI_JUMP_HANG;
-                }
-                else newAniIndex = ANI_JUMP_DROP;
-            }
-            else 
-            {
-                newAniIndex = ANI_RUN;
             }
 
             if (lastAniIndex != newAniIndex)
