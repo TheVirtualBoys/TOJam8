@@ -72,26 +72,22 @@ namespace WindowsGame1
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			int tileSetIndex = gameData.getTileSetIndex(gameData.maps[MAPS_FOREGROUND].tileset);
-			if (tileSetIndex >= 0)
+			int numRows = numScreenTilesHigh;
+			int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
+			for (int row = 0; row < numRows; ++row)
 			{
-				int numRows = numScreenTilesHigh;
-				int numCols = numScreenTilesWide + 1;	//get the # cols with one extra past screen width so that per pixel shifting doesn't look bad
-				for (int row = 0; row < numRows; ++row)
+				for (int col = 0; col < numCols; ++col)
 				{
-					for (int col = 0; col < numCols; ++col)
-					{
-						Map mapData = getMapData(row, col);
-						TileSet tileSet = gameData.getTileSet(mapData.tileset);
+					Map mapData = getMapData(row, col);
+					TileSet tileSet = gameData.getTileSet(mapData.tileset);
 
-						int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
-						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
-							continue;
+					int tileSetRectIndex = getMapDataRectIndex(mapData, row, col);
+					if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
+						continue;
 
-						Rectangle dims = tileSet.coords[tileSetRectIndex];
-						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - pixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
-					}
+					Rectangle dims = tileSet.coords[tileSetRectIndex];
+					//NOTE: row * dims.Height only works if ALL tiles have the same height
+					spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - pixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
 				}
 			}
 
@@ -227,8 +223,8 @@ namespace WindowsGame1
 		 */
 		private int getNextMap()
 		{
-			//TODO: should probably pick a random mapset next
-			return MAPS_FOREGROUND;
+			//pick a random mapset next
+			return gameData.randGenerator.Next(0, gameData.maps.Count);
 		}
 
 	}
