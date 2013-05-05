@@ -48,6 +48,10 @@
 		TileWidth = "256" TileHeight = "240"
 		HorizontalTileCount = "1" VerticalTileCount = "1"
 		TileCount = "1"/>
+  <tileset name = "score_screen" fileName = "score_screen.png"
+		TileWidth = "256" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
