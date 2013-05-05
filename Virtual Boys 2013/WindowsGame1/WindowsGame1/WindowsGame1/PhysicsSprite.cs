@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace WindowsGame1
 {
-    class PhysicsSprite : Sprite
+    public class PhysicsSprite : Sprite
     {
         private const int width = 29;
         private const int height = 34;
@@ -21,6 +21,8 @@ namespace WindowsGame1
         int lastAniIndex;
         double m_dyingTimer;
         const double m_deathTime = 2.5;
+
+		KeyboardState oldKeyboard;
 
 		public enum PlayerType
 		{
@@ -360,7 +362,20 @@ namespace WindowsGame1
                 m_acceleration.Y = 1500;
                 /*if ( m_traction )*/ m_jumpAccelTime = 0.0; //re-enable jump when on ground
             }
+
+			if (keyboard.IsKeyDown(Keys.F) && !oldKeyboard.IsKeyDown(Keys.F))
+			{
+				fireProjectile();
+			}
+
+			oldKeyboard = keyboard;
         }
+
+		private void fireProjectile()
+		{
+			Projectile fireball = new Projectile(m_position.X, m_position.Y, m_velocity.X, m_velocity.Y, PlayerId, PlayerGlowType);
+			Game1.Instance.gameData.projectiles.Add(fireball);
+		}
 
         /*                            int trueIndex = getMapDataTrueIndex(mapData, row, col);
                      int boundFlags = (int)tileSet.bounds[trueIndex];

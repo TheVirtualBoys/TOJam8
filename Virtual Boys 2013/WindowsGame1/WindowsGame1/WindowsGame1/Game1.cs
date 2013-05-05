@@ -55,6 +55,9 @@ namespace WindowsGame1
 		SpriteFont font;
 		int score;
 
+		public PhysicsSprite player1;
+		public PhysicsSprite player2;
+
 		//FIXME: this is temp
 		MapLayer mapLayer;
 
@@ -93,12 +96,12 @@ namespace WindowsGame1
 			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
 				oldPadState[1] = GamePad.GetState(PlayerIndex.Two);
 
-			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P1 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player1);
-			sprite.Ani.start();
-			gameData.sprites.Add(sprite);
-			sprite = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P2 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player2);
-			sprite.Ani.start();
-			gameData.sprites.Add(sprite);
+			player1 = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P1 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player1);
+			player1.Ani.start();
+			gameData.sprites.Add(player1);
+			player2 = new PhysicsSprite(gameData.animations[PhysicsSprite.ANI_P2 + PhysicsSprite.ANI_RUN], gameData.animations[PhysicsSprite.ANI_RED_GLOW + PhysicsSprite.ANI_RUN], PhysicsSprite.PlayerType.Player2);
+			player2.Ani.start();
+			gameData.sprites.Add(player2);
 
 			TileSet bgTileSet = gameData.getTileSet("bg");
 			ImageLayer bgLayer = new ImageLayer(gameData, bgTileSet);
