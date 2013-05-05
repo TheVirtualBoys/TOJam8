@@ -29,6 +29,8 @@ namespace WindowsGame1
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
 
+		State state;
+
 		KeyboardState oldKeyState;
 
 		//FIXME: this is temp
@@ -65,9 +67,9 @@ namespace WindowsGame1
 
 			oldKeyState = Keyboard.GetState();
 
-            PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
-            sprite.Ani.start();
-            gameData.sprites.Add(sprite);
+			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
+			sprite.Ani.start();
+			gameData.sprites.Add(sprite);
 
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
@@ -109,50 +111,28 @@ namespace WindowsGame1
 				this.Exit();
 
 			// TODO: Add your update logic here
-
-			//walk through and update all layers
-			foreach (Layer layer in gameData.layers)
-			{
-				layer.Update(gameTime);
-			}
-
-			//walk through all the sprites and update them
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				sprite.update(gameTime);
-			}
-
-			base.Update(gameTime);
-
-			UpdateInput();
-		}
-
-		private void UpdateInput()
-		{
 			KeyboardState newKeyState = Keyboard.GetState();
-
-/*			if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
-				incPixelShiftSize(-1);
-			else if (GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
-				incPixelShiftSize(1);
-			else if (newKeyState.IsKeyDown(Keys.Left) && !oldKeyState.IsKeyDown(Keys.Left))
+			switch (state)
 			{
-				//left key was pressed
-				incPixelShiftSize(-1);
+				case State.STATE_GAMEPLAY:
+					gameplayInput(oldKeyState, newKeyState);
+					gameplayUpdate(gameTime);
+				break;
+				case State.STATE_INTRO:
+					introInput(oldKeyState, newKeyState);
+					introUpdate(gameTime);
+				break;
+				case State.STATE_SCORES:
+					scoresInput(oldKeyState, newKeyState);
+					scoresUpdate(gameTime);
+				break;
+				case State.STATE_SPLASH:
+					splashInput(oldKeyState, newKeyState);
+					splashUpdate(gameTime);
+				break;
 			}
-			else if (newKeyState.IsKeyDown(Keys.Right) && !oldKeyState.IsKeyDown(Keys.Right))
-			{
-				//right key was pressed
-				incPixelShiftSize(1);
-			}
-			else if (newKeyState.IsKeyDown(Keys.Up) && !oldKeyState.IsKeyDown(Keys.Up))
-			{
-				audioSys.playSFX(AudioSys.Effect.SFX_LAND);
-			}
-*/
-
-            gameData.sprites[0].input( newKeyState );
-
+			
+			base.Update(gameTime);
 			oldKeyState = newKeyState;
 		}
 
@@ -165,6 +145,78 @@ namespace WindowsGame1
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
 			// TODO: Add your drawing code here
+			switch (state)
+			{
+				case State.STATE_GAMEPLAY:
+					gameplayDraw(gameTime);
+				break;
+				case State.STATE_INTRO:
+					introDraw(gameTime);
+				break;
+				case State.STATE_SCORES:
+					scoresDraw(gameTime);
+				break;
+				case State.STATE_SPLASH:
+					splashDraw(gameTime);
+				break;
+			}
+			base.Draw(gameTime);
+		}
+
+		public void gameplayUpdate(GameTime gameTime)
+		{
+			//walk through and update all layers
+			foreach (Layer layer in gameData.layers)
+			{
+				layer.Update(gameTime);
+			}
+
+			//walk through all the sprites and update them
+			foreach (Sprite sprite in gameData.sprites)
+			{
+				sprite.update(gameTime);
+			}
+
+		}
+
+		public void introUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void scoresUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void splashUpdate(GameTime gameTime)
+		{
+
+		}
+
+		public void gameplayInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			gameData.sprites[0].input(newKeyState);
+		}
+
+		public void introInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_GAMEPLAY;
+		}
+
+		public void scoresInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			// wait for any input, then return to intro state
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+		}
+
+		public void splashInput(KeyboardState oldKeyState, KeyboardState newKeyState)
+		{
+			if (newKeyState.GetPressedKeys().Length > 0) state = State.STATE_INTRO;
+		}
+
+		public void gameplayDraw(GameTime gameTime)
+		{
 			spriteBatch.Begin();
 
 			//walk through and draw all layers
@@ -193,11 +245,25 @@ namespace WindowsGame1
 
 					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
 				}
-				
+
 			}
 
 			spriteBatch.End();
-			base.Draw(gameTime);
+		}
+
+		public void introDraw(GameTime gameTime)
+		{
+
+		}
+
+		public void scoresDraw(GameTime gameTime)
+		{
+
+		}
+
+		public void splashDraw(GameTime gameTime)
+		{
+
 		}
 
 		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY, Map mapData, TileSet tileSet)
