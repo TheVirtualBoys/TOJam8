@@ -19,13 +19,16 @@ namespace WindowsGame1
 		TileSet tileSet;
 		int imageIndex;
 
+		GameData gameData;
+
 		/**
 		 * Creates a new ImageLayer with the assumption that the tileset only contains 1 image
 		 */
-		public ImageLayer(TileSet tileSet)
+		public ImageLayer(GameData gameData, TileSet tileSet)
 		{
 			this.tileSet = tileSet;
 			this.imageIndex = 0;
+			this.gameData = gameData;
 
 			pxPerFrameSpeed = 0;
 			pixelShiftSizeAccumulator = 0;
@@ -34,10 +37,11 @@ namespace WindowsGame1
 			yOffset = 0;
 		}
 
-		public ImageLayer(TileSet tileSet, int imageIndex)
+		public ImageLayer(GameData gameData, TileSet tileSet, int imageIndex)
 		{
 			this.tileSet = tileSet;
 			this.imageIndex = imageIndex;
+			this.gameData = gameData;
 
 			pxPerFrameSpeed = 0;
 			pixelShiftSizeAccumulator = 0;
@@ -56,15 +60,50 @@ namespace WindowsGame1
 			pixelShiftSizeAccumulator -= pxShiftSize;
 
 			xOffset += pxShiftSize;
+
+			xOffset %= tileSet.coords[imageIndex].Width;
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			Rectangle srcRect = tileSet.coords[imageIndex];
-			Rectangle dest = new Rectangle(xOffset, yOffset, srcRect.Width, srcRect.Height);
-			spriteBatch.Draw(tileSet.texture, dest, srcRect, Color.White);
+			Rectangle imgRect = tileSet.coords[imageIndex];
 
+			int dstLeft = Math.Max(xOffset, 0);
+			int dstRight = Math.Min(xOffset + imgRect.Width, gameData.ScreenWidth);
+			int dstTop = Math.Max(yOffset, 0);
+			int dstBottom = Math.Min(yOffset + imgRect.Height, gameData.ScreenHeight);
+			int dstHeight = dstBottom - dstTop;
 
+			Rectangle dest = new Rectangle(dstLeft, dstTop, dstRight - dstLeft, dstHeight);
+
+			int srcLeft = Math.Max(0, -xOffset);
+			int srcTop = Math.Max(0, -yOffset);
+			int srcRight = Math.Min(gameData.ScreenWidth - xOffset, imgRect.Width);
+			int srcBottom = Math.Min(gameData.ScreenHeight - yOffset, imgRect.Height);
+			int srcHeight = srcBottom - srcTop;
+
+			Rectangle src = new Rectangle(srcLeft, srcTop, srcRight - srcLeft, srcHeight);
+
+			spriteBatch.Draw(tileSet.texture, dest, src, Color.White);
+
+			if (dstRight < gameData.ScreenWidth)
+			{
+				//need to draw again to wrap image
+				int remainingWidth = gameData.ScreenWidth - dstRight;
+
+				dest = new Rectangle(dstRight, dstTop, remainingWidth, dstHeight);
+				src = new Rectangle(0, srcTop, remainingWidth, srcHeight);
+				spriteBatch.Draw(tileSet.texture, dest, src, Color.White);
+			}
+			else if (dstLeft > 0)
+			{
+				//need to draw again to wrap image
+				int remainingWidth = dstLeft;
+
+				dest = new Rectangle(0, dstTop, remainingWidth, dstHeight);
+				src = new Rectangle(imgRect.Width - remainingWidth, srcTop, remainingWidth, srcHeight);
+				spriteBatch.Draw(tileSet.texture, dest, src, Color.White);
+			}
 		}
 
 		public override void setSpeed(double pxPerFrame)

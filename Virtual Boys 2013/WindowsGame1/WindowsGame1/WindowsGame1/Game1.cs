@@ -79,7 +79,7 @@ namespace WindowsGame1
 			gameData.sprites.Add(sprite);
 
 			TileSet bgTileSet = gameData.getTileSet("bg");
-			ImageLayer bgLayer = new ImageLayer(bgTileSet);
+			ImageLayer bgLayer = new ImageLayer(gameData, bgTileSet);
 			gameData.layers.Add(bgLayer);
 			bgLayer.setSpeed(-0.25);
 
