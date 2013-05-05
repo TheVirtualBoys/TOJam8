@@ -103,7 +103,7 @@ namespace WindowsGame1
 			bgLayer.setSpeed(-0.25);
 
 			TileSet subwayTileSet = gameData.getTileSet("subway");
-			TimedImageLayer subwayLayer = new TimedImageLayer(gameData, subwayTileSet, 20 * 1000, 40 * 1000);
+			TrainImageLayer subwayLayer = new TrainImageLayer(gameData, subwayTileSet, 10 * 1000, 30 * 1000, -4, -15);
 			gameData.layers.Add(subwayLayer);
 			subwayLayer.setSpeed(-4);
 			subwayLayer.FixedYOffset = 120;
