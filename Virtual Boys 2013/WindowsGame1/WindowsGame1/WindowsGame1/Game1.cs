@@ -25,7 +25,7 @@ namespace WindowsGame1
 	public class Game1 : Microsoft.Xna.Framework.Game
 	{
 		AudioSys				audioSys;
-		GameData				gameData;
+		public GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
 		static Game1 sm_game;
@@ -127,9 +127,24 @@ namespace WindowsGame1
 			gameData.layers.Add(mapLayer);
 			mapLayer.setSpeed(2.25);
 
+			SpriteLayer spriteLayer = new SpriteLayer(gameData);
+			gameData.layers.Add(spriteLayer);
+
+			TileSet pipeTileSet1 = gameData.getTileSet("pipe1");
+			TrainImageLayer pipeLayer1 = new TrainImageLayer(gameData, pipeTileSet1, 2 * 1000, 10 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer1);
+			pipeLayer1.setSpeed(-6);
+			pipeLayer1.FixedXOffset = gameData.ScreenWidth;
+
+			TileSet pipeTileSet2 = gameData.getTileSet("pipe2");
+			TrainImageLayer pipeLayer2 = new TrainImageLayer(gameData, pipeTileSet2, 2 * 1000, 10 * 1000, -6, -6);
+			gameData.layers.Add(pipeLayer2);
+			pipeLayer2.setSpeed(-6);
+			pipeLayer2.FixedXOffset = gameData.ScreenWidth;
+
 			// Create RenderTargets after gameData.layers is populated
-			renderTarget = new RenderTarget2D[gameData.layers.Count + 2]; // +2 for sprite and gui layers
-			for (int i = 0; i < gameData.layers.Count + 2; i++) {
+			renderTarget = new RenderTarget2D[gameData.layers.Count + 1];
+			for (int i = 0; i < gameData.layers.Count + 1; i++) {
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
 			setState(State.STATE_SPLASH);
@@ -249,12 +264,6 @@ namespace WindowsGame1
 				layer.Update(gameTime);
 			}
 
-			//walk through all the sprites and update them
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				sprite.update(gameTime);
-			}
-
 		}
 
 		public void introUpdate(GameTime gameTime)
@@ -331,29 +340,9 @@ namespace WindowsGame1
 				spriteBatch.End();
 			}
 
-			//walk through all the sprites and draw them
 			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
 			GraphicsDevice.Clear(Color.Transparent);
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
-			foreach (Sprite sprite in gameData.sprites)
-			{
-				Frame frame = sprite.CurFrame;
-				if (frame == null)
-					continue;
-
-				int numComponents = frame.NumComponents;
-				for (int i = 0; i < numComponents; ++i)
-				{
-					FrameComponent component = frame.getComponent(i);
-					TileSet tileSet = gameData.tileSets[component.TileSetIndex];
-					Rectangle tileDims = component.getTileRect(tileSet);
-
-					Rectangle pos = new Rectangle(sprite.Left + component.Left, sprite.Top + component.Top, tileDims.Width, tileDims.Height);
-
-					spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
-				}
-
-			}
 			spriteBatch.DrawString(font, score.ToString(), new Vector2(3, 0), Color.White);
 			spriteBatch.End();
 			graphics.GraphicsDevice.SetRenderTarget(null);

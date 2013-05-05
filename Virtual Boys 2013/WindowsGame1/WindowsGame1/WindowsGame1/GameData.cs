@@ -59,6 +59,7 @@ namespace WindowsGame1
 		int screenWidth;
 		int screenHeight;
 
+		public Random randGenerator = new Random();
 
 		public GameData()
 		{
