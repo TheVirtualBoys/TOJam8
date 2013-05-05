@@ -2,11 +2,10 @@
 <tilesets>
 <tileset name = "Collision_Tileset" fileName = "Collision_Tileset.bmp" 
 	TileWidth = "16" TileHeight = "16"
-	HorizontalTileCount = "20" VerticalTileCount = "3"
+	HorizontalTileCount = "1" VerticalTileCount = "60"
 	TileCount = "60"/>
 </tilesets>
 
-<sequences>
 
 <maps>
 <map name = "Section_1" tileset = "Collision_Tileset" height = "15" width = "48">

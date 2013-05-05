@@ -1,8 +1,8 @@
 ; --- bitmap file ----------------------------------------
 
 #tileset
-#tilebitmap WindowsGame1/WindowsGame1/WindowsGame1Content/<TileSetIdentifier>.bmp 320
-#end tilebitmap
+#tstilebitmap WindowsGame1/WindowsGame1/WindowsGame1Content/<TileSetIdentifier>.bmp 320
+#end tstilebitmap
 #end tileset
 
 ; --------------------------------------------------------
@@ -17,8 +17,8 @@
 	TileCount = "<TileCount>"/\>
 \</tilesets\>
 
-\<sequences\>
 #sequence
+\<sequences\>
 \<sequence spriteNumber="<SpriteNumber>" sequenceNumber="<SequenceNumber>" sequenceLength="<SequenceLength>" \>
 #sequencedata
 \<sequencedata frame="<TileNumber>" length="<FrameCount>" /\>
