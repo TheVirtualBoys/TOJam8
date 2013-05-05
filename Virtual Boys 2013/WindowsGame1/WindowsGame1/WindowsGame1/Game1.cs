@@ -25,7 +25,7 @@ namespace WindowsGame1
 	public class Game1 : Microsoft.Xna.Framework.Game
 	{
 		AudioSys				audioSys;
-		GameData				gameData;
+		public GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
 		static Game1 sm_game;
