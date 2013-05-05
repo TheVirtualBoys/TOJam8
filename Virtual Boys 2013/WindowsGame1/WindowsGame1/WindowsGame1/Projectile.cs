@@ -61,7 +61,7 @@ namespace WindowsGame1
 					destroyProjectile();
 				}
 			}
-			else if (posX > Game1.Instance.gameData.ScreenWidth)
+			else if (posX < 0 || posX > Game1.Instance.gameData.ScreenWidth)
 			{
 				destroyProjectile();
 			}
@@ -106,7 +106,9 @@ namespace WindowsGame1
 			//swap the creator
 			creatorId = (creatorId == PhysicsSprite.PlayerType.Player1) ? PhysicsSprite.PlayerType.Player2 : PhysicsSprite.PlayerType.Player1;
 
-			//TODO: reverse the direction
+			//reverse the direction
+			velX = -velX;
+			velY = -velY;
 		}
 
 		private bool playerGlowMatches(PhysicsSprite player, PhysicsSprite.GlowType glow)
