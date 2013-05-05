@@ -28,6 +28,11 @@ namespace WindowsGame1
 		GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
+        static Game1 sm_game;
+        public static Game1 Instance
+        {
+            get { return sm_game; }
+        }   
 
 		private const int MAPS_FOREGROUND = 0;
 		private const int MAPS_BACKGROUND = 1;
@@ -62,6 +67,7 @@ namespace WindowsGame1
 
 		public Game1()
 		{
+            sm_game = this;
 			graphics = new GraphicsDeviceManager(this);
 			graphics.PreferredBackBufferWidth = 256;
 			graphics.PreferredBackBufferHeight = 240;
@@ -221,25 +227,9 @@ namespace WindowsGame1
                         if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
 							continue;
 
-                        Color color = Color.White;
-                        if (col == numCols / 2)
-                        {
-                            int trueIndex = getMapDataTrueIndex(mapData, row, col);
-                            int boundFlags = (int)tileSet.bounds[trueIndex];
-                            if (boundFlags == 15) color = Color.Red;
-                            if (boundFlags == (int)TileSet.Bounds.BOUNDS_BOTTOM) color = Color.Green;
-/*                            if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_TOP) == 1 ) color = Color.Red;
-                            if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_RIGHT) == 1 ) color = Color.Red;
-                                case TileSet.Bounds.BOUNDS_LEFT: color = Color.Green; break;
-                                case TileSet.Bounds.BOUNDS_BOTTOM: color = Color.Blue; break;
-                                case TileSet.Bounds.BOUNDS_RIGHT: color = Color.Yellow; break;
-                                case TileSet.Bounds.BOUNDS_SLASH: color = Color.Purple; break;
-                                case TileSet.Bounds.BOUNDS_BSLASH: color = Color.Orange; break;
-                            };
-  */                      }
 						Rectangle dims = tileSet.coords[tileSetRectIndex];
 						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, color);
+						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - startingPixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
 					}
 				}
 			}
@@ -282,7 +272,7 @@ namespace WindowsGame1
 			}
 		}
 
-		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY, Map mapData, TileSet tileSet)
+		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY)
 		{
 			//defaults
 			boundsX = -1;
@@ -321,7 +311,11 @@ namespace WindowsGame1
 
 			while (true)
 			{
-				bounds = getMapTileBounds(x0, y0, mapData, tileSet);
+                int row, col;
+                convertScreenPxToTile(x0, y0, out row, out col);
+                Map mapData = getAbsoluteMapData(row, col);
+                TileSet tileSet = gameData.getTileSet(mapData.tileset);
+                bounds = getMapTileBounds(x0, y0, mapData, tileSet);
 				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
 					boundsX = x0;
@@ -354,6 +348,8 @@ namespace WindowsGame1
 			//get the tile position for the pixel coords
 			int row, col;
 			convertScreenPxToTile(px, py, out row, out col);
+            row %= mapData.height;
+            col %= mapData.width;
 
 			//get the bounds for the tile
 			int tileTypeIndex = mapData.data[row][col];
@@ -367,6 +363,12 @@ namespace WindowsGame1
 			int index = getMapDataIndex(screenRow, screenCol);
 			return (index >= 0) ? gameData.maps[index] : null;
 		}
+
+        public Map getAbsoluteMapData(int absoluteScreenRow, int absoluteScreenCol)
+        {
+            int index = getMapDataIndex(absoluteScreenRow, absoluteScreenCol - startingTileOffset);
+            return (index >= 0) ? gameData.maps[index] : null;
+        }
 
 		public int getMapDataIndex(int screenRow, int screenCol)
 		{
@@ -429,7 +431,7 @@ namespace WindowsGame1
 
 		private void convertScreenPxToTile(int pX, int pY, out int row, out int col)
 		{
-			col = (pX + startingPixelOffset) / tileWidth + startingTileOffset;
+            col = (pX + startingTileOffset * tileWidth + startingPixelOffset) / tileWidth;
 			row = pY / tileHeight;
 		}
 

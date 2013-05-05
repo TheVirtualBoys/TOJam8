@@ -48,7 +48,7 @@ namespace WindowsGame1
             m_velocity += m_acceleration * dt;
             Vector2 position = m_position + m_velocity * dt;
             m_lastDelta = dt;
-            //HACKJEFFGIFFEN until collision is up
+
             bool killVeloX = false;
             bool killVeloY = false;
             if (position.X < 0)
@@ -66,11 +66,23 @@ namespace WindowsGame1
                 killVeloY = true;
                 position.Y = 0;
             }
-            if (position.Y + height >= 240)
+            if (position.Y + height >= 240 )
             {
                 killVeloY = true;
-                position.Y = 240 - height;
+                position.Y = 239 - height;
             }
+
+            int hit_x = 0, hit_y = 0;
+            TileSet.Bounds bounds = Game1.Instance.ray((int)m_position.X + width - 1, (int)m_position.Y + height - 1, (int)position.X + width, (int)position.Y + height, out hit_x, out hit_y);
+            //bound = CheckRay( position + new Vector2( width, height ), out hitPos );
+            Vector2 hitPos = new Vector2(hit_x - width, hit_y - height);
+
+            if ( bounds != TileSet.Bounds.BOUNDS_NONE )
+            {
+                killVeloY = true;
+                position.Y = hitPos.Y;
+            }
+
             if (killVeloX) m_velocity.X = 0;
             if (killVeloY) m_velocity.Y = 0;
 
@@ -115,7 +127,7 @@ namespace WindowsGame1
             else 
             {
                 m_acceleration.Y = 1500;
-                if ( m_traction ) m_jumpAccelTime = 0.0; //re-enable jump when on ground
+                /*if ( m_traction )*/ m_jumpAccelTime = 0.0; //re-enable jump when on ground
             }
         }
 
