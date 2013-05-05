@@ -77,8 +77,8 @@ namespace WindowsGame1
 			gameData.init(Content);
 			base.Initialize();
 
-			gameData.ScreenWidth = graphics.PreferredBackBufferWidth;
-			gameData.ScreenHeight = graphics.PreferredBackBufferHeight;
+			gameData.ScreenWidth = 256;
+			gameData.ScreenHeight = 240;
 
 			oldKeyState = Keyboard.GetState();
 
@@ -91,17 +91,17 @@ namespace WindowsGame1
 			gameData.layers.Add(bgLayer);
 			bgLayer.setSpeed(-0.25);
 
+			TileSet subwayTileSet = gameData.getTileSet("subway");
+			ImageLayer subwayLayer = new ImageLayer(gameData, subwayTileSet);
+			gameData.layers.Add(subwayLayer);
+			subwayLayer.setSpeed(-4);
+			subwayLayer.YOffset = 120;
+
 			TileSet fenceTileSet = gameData.getTileSet("fence");
 			ImageLayer fenceLayer = new ImageLayer(gameData, fenceTileSet);
 			gameData.layers.Add(fenceLayer);
 			fenceLayer.setSpeed(-0.75);
 			fenceLayer.YOffset = gameData.ScreenHeight - fenceTileSet.height;
-
-			TileSet subwayTileSet = gameData.getTileSet("subway");
-			ImageLayer subwayLayer = new ImageLayer(gameData, subwayTileSet);
-			gameData.layers.Add(subwayLayer);
-			subwayLayer.setSpeed(-4);
-			subwayLayer.YOffset = 128;
 
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
