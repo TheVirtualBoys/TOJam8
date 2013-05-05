@@ -52,7 +52,7 @@ namespace WindowsGame1
             : base( aniData, glowAniData)
             {
 				this.playerType = playerType;
-                m_position = new Vector2( 128, 120);
+                m_position = (playerType == PlayerType.Player1)? new Vector2(130, 120) : new Vector2(32, 120);
                 m_velocity = m_acceleration = new Vector2(0, 0);
                 m_lastDelta = m_jumpAccelTime = 0.0;
                 m_jumping = true; //flying start
