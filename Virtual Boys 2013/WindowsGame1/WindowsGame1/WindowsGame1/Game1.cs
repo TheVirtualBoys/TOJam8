@@ -125,6 +125,9 @@ namespace WindowsGame1
 			SpriteLayer spriteLayer = new SpriteLayer(gameData);
 			gameData.layers.Add(spriteLayer);
 
+			ProjectileLayer projectileLayer = new ProjectileLayer(gameData);
+			gameData.layers.Add(projectileLayer);
+
 			TileSet pipeTileSet1 = gameData.getTileSet("pipe1");
 			TrainImageLayer pipeLayer1 = new TrainImageLayer(gameData, pipeTileSet1, 2 * 1000, 10 * 1000, -6, -6);
 			gameData.layers.Add(pipeLayer1);
