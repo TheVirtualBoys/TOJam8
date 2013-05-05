@@ -9,11 +9,13 @@ namespace WindowsGame1
 	{
 		int loopCount;
 		List<Frame> frames;
+		string name;
 
-		public AnimationData(int loopCount, List<Frame> frames)
+		public AnimationData(int loopCount, List<Frame> frames, string name)
 		{
 			this.loopCount = loopCount;
 			this.frames = frames;
+			this.name = name;
 		}
 
 		public int LoopCount
@@ -29,6 +31,11 @@ namespace WindowsGame1
 		public int NumFrames
 		{
 			get { return frames.Count; }
+		}
+
+		public string Name
+		{
+			get { return name; }
 		}
 
 	}

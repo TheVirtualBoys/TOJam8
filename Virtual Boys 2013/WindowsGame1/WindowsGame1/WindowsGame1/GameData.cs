@@ -218,7 +218,9 @@ namespace WindowsGame1
 				int loopCount = (int)animationData.Attribute("loopCount");
 				List<Frame> frames = getFrames(animationData);
 
-				AnimationData animation = new AnimationData(loopCount, frames);
+				string name = (string)animationData.Attribute("name");
+
+				AnimationData animation = new AnimationData(loopCount, frames, name);
 				animations.Add(animation);
 			}
 			return animations;
