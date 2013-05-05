@@ -11,22 +11,25 @@ namespace WindowsGame1
 	public class Sprite
 	{
 		protected Animation ani;
+		protected Animation glowAni;
 		private int left;
 		private int top;
         protected Color m_color;
 
-		public Sprite(Animation ani)
+		public Sprite(Animation ani, Animation glowAni)
 		{
 			this.ani = ani;
+			this.glowAni = glowAni;
 
 			left = 0;
 			top = 0;
             m_color = Color.White;
 		}
 
-		public Sprite(AnimationData aniData)
+		public Sprite(AnimationData aniData, AnimationData glowAniData)
 		{
 			this.ani = new Animation(aniData);
+			this.glowAni = new Animation(glowAniData);
 
 			left = 0;
 			top = 0;
@@ -50,14 +53,32 @@ namespace WindowsGame1
 			get { return ani; }
 		}
 
+		public Animation GlowAni
+		{
+			get { return glowAni; }
+		}
+
 		public virtual void update(GameTime frameTime)
 		{
+			if (glowAni != null)
+				glowAni.update(frameTime);
 			ani.update(frameTime);
 		}
 
 		public virtual void draw(GameTime frameTime, SpriteBatch spriteBatch)
 		{
-			Frame frame = CurFrame;
+			drawFrame(CurFrame, spriteBatch);
+			if (glowAni != null)
+			{
+				BlendState oldState = spriteBatch.GraphicsDevice.BlendState;
+				spriteBatch.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+				drawFrame(CurGlowFrame, spriteBatch);
+				spriteBatch.GraphicsDevice.BlendState = oldState;
+			}
+		}
+
+		protected void drawFrame(Frame frame, SpriteBatch spriteBatch)
+		{
 			if (frame == null)
 				return;
 
@@ -79,6 +100,11 @@ namespace WindowsGame1
 		public Frame CurFrame
 		{
 			get { return Ani.CurFrame; }
+		}
+
+		public Frame CurGlowFrame
+		{
+			get { return (GlowAni != null)? GlowAni.CurFrame : null; }
 		}
 
 		public virtual Color getFilterColour()

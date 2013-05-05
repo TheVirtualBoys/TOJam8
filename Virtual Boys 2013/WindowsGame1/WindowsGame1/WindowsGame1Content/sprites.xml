@@ -44,6 +44,10 @@
 		TileWidth = "12" TileHeight = "8"
 		HorizontalTileCount = "5" VerticalTileCount = "2"
 		TileCount = "10"/>
+  <tileset name = "intro" fileName = "intro_screen.png"
+		TileWidth = "256" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
@@ -314,12 +318,6 @@
       </frame>
     </animation>
 
-    <animation loopCount="0" name="blue_glow_idle">
-      <frame frameTime="33">
-        <component tileset="playerglow" left="0" top="0">7</component>
-      </frame>
-    </animation>
-
     <animation loopCount="-1" name="red_glow_run">
       <frame frameTime="100">
         <component tileset="playerglow" left="0" top="0">1</component>
@@ -329,18 +327,6 @@
       </frame>
       <frame frameTime="100">
         <component tileset="playerglow" left="0" top="0">3</component>
-      </frame>
-    </animation>
-
-    <animation loopCount="-1" name="blue_glow_run">
-      <frame frameTime="100">
-        <component tileset="playerglow" left="0" top="0">8</component>
-      </frame>
-      <frame frameTime="100">
-        <component tileset="playerglow" left="0" top="0">9</component>
-      </frame>
-      <frame frameTime="100">
-        <component tileset="playerglow" left="0" top="0">10</component>
       </frame>
     </animation>
 
@@ -362,7 +348,25 @@
       </frame>
     </animation>
 
-    <animation loopCount="0" name="blue_glow_jump_leap">
+	<animation loopCount="0" name="blue_glow_idle">
+			<frame frameTime="33">
+				<component tileset="playerglow" left="0" top="0">7</component>
+			</frame>
+		</animation>
+
+	<animation loopCount="-1" name="blue_glow_run">
+			<frame frameTime="100">
+				<component tileset="playerglow" left="0" top="0">8</component>
+			</frame>
+			<frame frameTime="100">
+				<component tileset="playerglow" left="0" top="0">9</component>
+			</frame>
+			<frame frameTime="100">
+				<component tileset="playerglow" left="0" top="0">10</component>
+			</frame>
+		</animation>
+
+	<animation loopCount="0" name="blue_glow_jump_leap">
       <frame frameTime="33">
         <component tileset="playerglow" left="0" top="0">11</component>
       </frame>
