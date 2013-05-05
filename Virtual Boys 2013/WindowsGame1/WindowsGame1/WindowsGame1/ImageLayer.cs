@@ -115,6 +115,13 @@ namespace WindowsGame1
 			}
 		}
 
+		public void reset()
+		{
+			pixelShiftSizeAccumulator = 0;
+			xOffset = 0;
+			yOffset = 0;
+		}
+
 		public override void setSpeed(double pxPerFrame)
 		{
 			this.pxPerFrameSpeed = pxPerFrame;
@@ -125,16 +132,28 @@ namespace WindowsGame1
 			return pxPerFrameSpeed;
 		}
 
-		public int XOffset
+		public int FixedXOffset
 		{
 			get { return fixedXOffset; }
 			set { fixedXOffset = value; }
 		}
 
-		public int YOffset
+		public int FixedYOffset
 		{
 			get { return fixedYOffset; }
 			set { fixedYOffset = value; }
+		}
+
+		public int DynamicXOffset
+		{
+			get { return xOffset; }
+			set { xOffset = value; }
+		}
+
+		public int DynamicYOffset
+		{
+			get { return yOffset; }
+			set { yOffset = value; }
 		}
 	}
 }

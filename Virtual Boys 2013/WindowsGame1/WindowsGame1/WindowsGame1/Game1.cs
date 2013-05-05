@@ -92,16 +92,17 @@ namespace WindowsGame1
 			bgLayer.setSpeed(-0.25);
 
 			TileSet subwayTileSet = gameData.getTileSet("subway");
-			ImageLayer subwayLayer = new ImageLayer(gameData, subwayTileSet);
+			TimedImageLayer subwayLayer = new TimedImageLayer(gameData, subwayTileSet, 1000, 10 * 1000);
 			gameData.layers.Add(subwayLayer);
 			subwayLayer.setSpeed(-4);
-			subwayLayer.YOffset = 120;
+			subwayLayer.FixedYOffset = 120;
+			subwayLayer.FixedXOffset = gameData.ScreenWidth;
 
 			TileSet fenceTileSet = gameData.getTileSet("fence");
 			ImageLayer fenceLayer = new ImageLayer(gameData, fenceTileSet);
 			gameData.layers.Add(fenceLayer);
 			fenceLayer.setSpeed(-0.75);
-			fenceLayer.YOffset = gameData.ScreenHeight - fenceTileSet.height;
+			fenceLayer.FixedYOffset = gameData.ScreenHeight - fenceTileSet.height;
 
 			mapLayer = new MapLayer(gameData, 16, 16);
 			gameData.layers.Add(mapLayer);
