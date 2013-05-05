@@ -44,6 +44,10 @@
 		TileWidth = "12" TileHeight = "8"
 		HorizontalTileCount = "5" VerticalTileCount = "2"
 		TileCount = "10"/>
+  <tileset name = "intro" fileName = "intro_screen.png"
+		TileWidth = "256" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
