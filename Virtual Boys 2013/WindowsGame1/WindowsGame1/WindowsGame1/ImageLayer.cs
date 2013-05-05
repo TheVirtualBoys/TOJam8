@@ -16,6 +16,9 @@ namespace WindowsGame1
 		int xOffset;
 		int yOffset;
 
+		int fixedXOffset;
+		int fixedYOffset;
+
 		TileSet tileSet;
 		int imageIndex;
 
@@ -35,6 +38,9 @@ namespace WindowsGame1
 
 			xOffset = 0;
 			yOffset = 0;
+
+			fixedXOffset = 0;
+			fixedYOffset = 0;
 		}
 
 		public ImageLayer(GameData gameData, TileSet tileSet, int imageIndex)
@@ -48,6 +54,9 @@ namespace WindowsGame1
 
 			xOffset = 0;
 			yOffset = 0;
+
+			fixedXOffset = 0;
+			fixedYOffset = 0;
 		}
 
 		public override void Update(GameTime gameTime)
@@ -74,7 +83,7 @@ namespace WindowsGame1
 			int dstBottom = Math.Min(yOffset + imgRect.Height, gameData.ScreenHeight);
 			int dstHeight = dstBottom - dstTop;
 
-			Rectangle dest = new Rectangle(dstLeft, dstTop, dstRight - dstLeft, dstHeight);
+			Rectangle dest = new Rectangle(dstLeft + fixedXOffset, dstTop + fixedYOffset, dstRight - dstLeft, dstHeight);
 
 			int srcLeft = Math.Max(0, -xOffset);
 			int srcTop = Math.Max(0, -yOffset);
@@ -91,7 +100,7 @@ namespace WindowsGame1
 				//need to draw again to wrap image
 				int remainingWidth = gameData.ScreenWidth - dstRight;
 
-				dest = new Rectangle(dstRight, dstTop, remainingWidth, dstHeight);
+				dest = new Rectangle(dstRight + fixedXOffset, dstTop + fixedYOffset, remainingWidth, dstHeight);
 				src = new Rectangle(0, srcTop, remainingWidth, srcHeight);
 				spriteBatch.Draw(tileSet.texture, dest, src, Color.White);
 			}
@@ -100,7 +109,7 @@ namespace WindowsGame1
 				//need to draw again to wrap image
 				int remainingWidth = dstLeft;
 
-				dest = new Rectangle(0, dstTop, remainingWidth, dstHeight);
+				dest = new Rectangle(0 + fixedXOffset, dstTop + fixedYOffset, remainingWidth, dstHeight);
 				src = new Rectangle(imgRect.Width - remainingWidth, srcTop, remainingWidth, srcHeight);
 				spriteBatch.Draw(tileSet.texture, dest, src, Color.White);
 			}
@@ -116,5 +125,16 @@ namespace WindowsGame1
 			return pxPerFrameSpeed;
 		}
 
+		public int XOffset
+		{
+			get { return fixedXOffset; }
+			set { fixedXOffset = value; }
+		}
+
+		public int YOffset
+		{
+			get { return fixedYOffset; }
+			set { fixedYOffset = value; }
+		}
 	}
 }
