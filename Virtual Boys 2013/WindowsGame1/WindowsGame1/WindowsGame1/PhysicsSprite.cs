@@ -224,7 +224,11 @@ namespace WindowsGame1
                 if (collide)
                 {
                     killVeloX = true;
-                    position.Y = 0; //HACKJEFFGIFFEN
+                    m_color = Color.Red;
+                }
+                else
+                {
+                    m_color = Color.White;
                 }
              /*   if ( isSlash )
                 {

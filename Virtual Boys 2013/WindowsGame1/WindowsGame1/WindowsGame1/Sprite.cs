@@ -14,6 +14,7 @@ namespace WindowsGame1
 		protected Animation glowAni;
 		private int left;
 		private int top;
+        protected Color m_color;
 
 		public Sprite(Animation ani, Animation glowAni)
 		{
@@ -22,6 +23,7 @@ namespace WindowsGame1
 
 			left = 0;
 			top = 0;
+            m_color = Color.White;
 		}
 
 		public Sprite(AnimationData aniData, AnimationData glowAniData)
@@ -31,6 +33,7 @@ namespace WindowsGame1
 
 			left = 0;
 			top = 0;
+            m_color = Color.White;
 		}
 
 		public int Left
@@ -101,7 +104,7 @@ namespace WindowsGame1
 
 		public virtual Color getFilterColour()
 		{
-			return Color.White;
+            return m_color;
 		}
 	}
 }
