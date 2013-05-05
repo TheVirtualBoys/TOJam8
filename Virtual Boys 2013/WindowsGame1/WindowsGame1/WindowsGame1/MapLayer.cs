@@ -47,8 +47,8 @@ namespace WindowsGame1
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
 
-			numScreenTilesWide = gameData.ScreenWidth / tileWidth;
-			numScreenTilesHigh = gameData.ScreenHeight / tileHeight;
+			numScreenTilesWide = 16;//gameData.ScreenWidth / tileWidth;
+			numScreenTilesHigh = 15;//gameData.ScreenHeight / tileHeight;
 
 			firstMap = MAPS_FOREGROUND;
 			secondMap = MAPS_FOREGROUND;
