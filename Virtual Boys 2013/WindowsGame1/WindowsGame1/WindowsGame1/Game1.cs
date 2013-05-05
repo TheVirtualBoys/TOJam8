@@ -46,8 +46,8 @@ namespace WindowsGame1
 		{
 			state = newState;
 			foreach (RenderTarget2D tex in renderTarget) {
-				graphics.GraphicsDevice.SetRenderTarget(tex);
-				GraphicsDevice.Clear(Color.CornflowerBlue);
+					//graphics.GraphicsDevice.SetRenderTarget(tex);
+					//GraphicsDevice.Clear(Color.CornflowerBlue);
 			}
 			graphics.GraphicsDevice.SetRenderTarget(null);
 		}
@@ -57,6 +57,8 @@ namespace WindowsGame1
 		GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
 		Song music;
+		SpriteFont font;
+		int score;
 
 		//FIXME: this is temp
 		MapLayer mapLayer;
@@ -92,6 +94,11 @@ namespace WindowsGame1
 			gameData.ScreenHeight = 240;
 
 			oldKeyState = Keyboard.GetState();
+
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				oldPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				oldPadState[1] = GamePad.GetState(PlayerIndex.Two);
 
 			PhysicsSprite sprite = new PhysicsSprite(gameData.animations[1]);
 			sprite.Ani.start();
@@ -140,6 +147,8 @@ namespace WindowsGame1
 				renderTarget[i] = new RenderTarget2D(graphics.GraphicsDevice, 256, 240, false, SurfaceFormat.Color, DepthFormat.Depth16);
 			}
 			setState(State.STATE_SPLASH);
+			font = Content.Load<SpriteFont>("System");
+			score = 0;
 		}
 
 		/// <summary>
@@ -180,28 +189,30 @@ namespace WindowsGame1
 
 			// TODO: Add your update logic here
 			newKeyState = Keyboard.GetState();
-            newPadState[0] = GamePad.GetState(PlayerIndex.One);
-            newPadState[1] = GamePad.GetState(PlayerIndex.Two);
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.One);
+			if (GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				newPadState[0] = GamePad.GetState(PlayerIndex.Two);
 
 			switch (state)
 			{
 				case State.STATE_GAMEPLAY:
 					if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
-					gameplayInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					gameplayInput();
 					gameplayUpdate(gameTime);
 				break;
 				case State.STATE_INTRO:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					introInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					introInput();
 					introUpdate(gameTime);
 				break;
 				case State.STATE_SCORES:
-					scoresInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					scoresInput();
 					scoresUpdate(gameTime);
 				break;
 				case State.STATE_SPLASH:
 					if (MediaPlayer.State == MediaState.Playing) MediaPlayer.Stop();
-					splashInput(oldKeyState, newKeyState, oldPadState, newPadState);
+					splashInput();
 					splashUpdate(gameTime);
 				break;
 			}
@@ -238,6 +249,7 @@ namespace WindowsGame1
 			foreach (Texture2D tex in renderTarget) {
 				spriteBatch.Draw(tex, new Rectangle(0, 0, 1024, 960), Color.White);
 			}
+			
 			spriteBatch.End();
 			base.Draw(gameTime);
 		}
@@ -274,7 +286,9 @@ namespace WindowsGame1
 
         public bool keyPressed(int player, Buttons key)
         {
-            return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
+			if (GamePad.GetCapabilities(PlayerIndex.One).IsConnected && GamePad.GetCapabilities(PlayerIndex.Two).IsConnected)
+				return (!oldPadState[player].IsButtonDown(key) && newPadState[player].IsButtonDown(key));
+			return false;
         }
 
 		public void gameplayInput()
@@ -312,6 +326,11 @@ namespace WindowsGame1
 				spriteBatch.End();
 			}
 
+			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+			GraphicsDevice.Clear(Color.Transparent);
+			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+			spriteBatch.DrawString(font, score.ToString(), new Vector2(3, 0), Color.White);
+			spriteBatch.End();
 			graphics.GraphicsDevice.SetRenderTarget(null);
 		}
 

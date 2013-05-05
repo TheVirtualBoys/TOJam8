@@ -46,6 +46,11 @@
       <Name>cv3.nsf</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="System.spritefont">
+      <Name>System</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
     <None Include="steve.xml">
       <Name>steve</Name>
       <Importer>XmlImporter</Importer>
