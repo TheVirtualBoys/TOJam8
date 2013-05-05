@@ -14,5 +14,8 @@ namespace WindowsGame1
 
 		public abstract void Draw(GameTime gameTime, SpriteBatch spriteBatch);
 
+		public abstract void setSpeed(double pxPerFrame);
+
+		public abstract double getSpeed();
 	}
 }

@@ -4,6 +4,26 @@
 	TileWidth = "29" TileHeight = "34"
 	HorizontalTileCount = "10" VerticalTileCount = "2"
 	TileCount = "20"/>
+	<tileset name = "bg" fileName = "bg.png"
+		TileWidth = "800" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+	<tileset name = "fence" fileName = "fence.png"
+		TileWidth = "256" TileHeight = "100"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+	<tileset name = "foreground_pipes" fileName = "foreground_pipes.png"
+		TileWidth = "75" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+	<tileset name = "subway" fileName = "subway.png"
+		TileWidth = "844" TileHeight = "64"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
+	<tileset name = "title" fileName = "title.png"
+		TileWidth = "256" TileHeight = "240"
+		HorizontalTileCount = "1" VerticalTileCount = "1"
+		TileCount = "1"/>
 </tilesets>
 
 	<animations>
