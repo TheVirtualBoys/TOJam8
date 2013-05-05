@@ -20,10 +20,10 @@ namespace WindowsGame1
         bool m_jumping;
         int lastAniIndex;
 
-        public PhysicsSprite(AnimationData aniData)
+        public PhysicsSprite(AnimationData aniData, int x=130, int y=120)
             : base( aniData)
             {
-                m_position = new Vector2( 128, 120);
+                m_position = new Vector2( x, y);
                 m_velocity = m_acceleration = new Vector2(0, 0);
                 m_lastDelta = m_jumpAccelTime = 0.0;
                 m_jumping = true; //flying start
