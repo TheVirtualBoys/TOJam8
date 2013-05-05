@@ -88,26 +88,9 @@ namespace WindowsGame1
 						if (tileSetRectIndex == -1)		//shouldn't draw these tiles so continue
 							continue;
 
-						Color color = Color.White;
-						if (col == numCols / 2)
-						{
-							int trueIndex = getMapDataTrueIndex(mapData, row, col);
-							int boundFlags = (int)tileSet.bounds[trueIndex];
-							if (boundFlags == 15) color = Color.Red;
-							if (boundFlags == (int)TileSet.Bounds.BOUNDS_BOTTOM) color = Color.Green;
-							/*                            if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_TOP) == 1 ) color = Color.Red;
-														if ( (boundFlags & (int)TileSet.Bounds.BOUNDS_RIGHT) == 1 ) color = Color.Red;
-															case TileSet.Bounds.BOUNDS_LEFT: color = Color.Green; break;
-															case TileSet.Bounds.BOUNDS_BOTTOM: color = Color.Blue; break;
-															case TileSet.Bounds.BOUNDS_RIGHT: color = Color.Yellow; break;
-															case TileSet.Bounds.BOUNDS_SLASH: color = Color.Purple; break;
-															case TileSet.Bounds.BOUNDS_BSLASH: color = Color.Orange; break;
-														};
-							  */
-						}
 						Rectangle dims = tileSet.coords[tileSetRectIndex];
 						//NOTE: row * dims.Height only works if ALL tiles have the same height
-						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - pixelOffset, row * dims.Height, dims.Width, dims.Height), dims, color);
+						spriteBatch.Draw(tileSet.texture, new Rectangle(col * dims.Width - pixelOffset, row * dims.Height, dims.Width, dims.Height), dims, Color.White);
 					}
 				}
 			}
@@ -163,6 +146,12 @@ namespace WindowsGame1
 			return (index >= 0) ? gameData.maps[index] : null;
 		}
 
+        public Map getAbsoluteMapData(int screenRow, int screenCol)
+        {
+            int index = getMapDataIndex(screenRow, screenCol - tileOffset);
+            return (index >= 0) ? gameData.maps[index] : null;
+        }
+
 		public int getMapDataIndex(int screenRow, int screenCol)
 		{
 			int col = screenCol + tileOffset;
@@ -207,6 +196,8 @@ namespace WindowsGame1
 			//get the tile position for the pixel coords
 			int row, col;
 			convertScreenPxToTile(px, py, out row, out col);
+            row %= mapData.height;
+            col %= mapData.width;
 
 			//get the bounds for the tile
 			int tileTypeIndex = mapData.data[row][col];

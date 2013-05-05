@@ -28,6 +28,11 @@ namespace WindowsGame1
 		GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
+        static Game1 sm_game;
+        public static Game1 Instance
+        {
+            get { return sm_game; }
+        }   
 
 		private enum State
 		{
@@ -47,6 +52,7 @@ namespace WindowsGame1
 
 		public Game1()
 		{
+            sm_game = this;
 			graphics = new GraphicsDeviceManager(this);
 			graphics.PreferredBackBufferWidth = 256;
 			graphics.PreferredBackBufferHeight = 240;
@@ -68,7 +74,6 @@ namespace WindowsGame1
 		{
 			// TODO: Add your initialization logic here
 			audioSys.init();
-			
 			gameData.init(Content);
 			base.Initialize();
 
@@ -297,8 +302,7 @@ namespace WindowsGame1
 		{
 
 		}
-
-		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY, Map mapData, TileSet tileSet)
+		public TileSet.Bounds ray(int x0, int y0, int x1, int y1, out int boundsX, out int boundsY)
 		{
 			//defaults
 			boundsX = -1;
@@ -337,9 +341,13 @@ namespace WindowsGame1
 
 			while (true)
 			{
+				int row, col;
+                mapLayer.convertScreenPxToTile(x0, y0, out row, out col);
+                Map mapData = mapLayer.getAbsoluteMapData(row, col);
+                TileSet tileSet = gameData.getTileSet(mapData.tileset);
 				//FIXME: mapLayer here is local and probably shouldn't be
-				bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);
-				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
+                bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
+                if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
 					boundsX = x0;
 					boundsY = y0;
@@ -363,8 +371,5 @@ namespace WindowsGame1
 
 			return bounds;
 		}
-
-
-
 	}
 }
