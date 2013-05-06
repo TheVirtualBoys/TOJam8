@@ -30,8 +30,8 @@ namespace WindowsGame1
 		{
 			this.posX = pX;
 			this.posY = pY;
-			this.velX = velX;
-			this.velY = velY;
+			this.velX = velX / 100;
+			this.velY = velY / 100;
 			this.creatorId = creatorId;
 			this.glowType = glowType;
 
@@ -93,6 +93,8 @@ namespace WindowsGame1
 				return;
 
 			//TODO
+			posX += velX;
+			posY += velY;
 		}
 
 		private void playHitAni()
@@ -135,14 +137,14 @@ namespace WindowsGame1
 
 				Rectangle pos = new Rectangle(Left + component.Left, Top + component.Top, tileDims.Width, tileDims.Height);
 
-				spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.Green);
+				spriteBatch.Draw(tileSet.texture, pos, tileDims, Color.White);
 			}
 		}
 
 
 		private void destroyProjectile()
 		{
-			Game1.Instance.gameData.projectiles.Remove(this);
+			Game1.Instance.gameData.projectilesToRemove.Add(this);
 		}
 
 		private PhysicsSprite getPlayer()
