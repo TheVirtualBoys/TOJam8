@@ -50,7 +50,7 @@ namespace WindowsGame1
 		static KeyboardState oldKeyState, newKeyState;
 		static GamePadState[] oldPadState, newPadState;
 		RenderTarget2D[] renderTarget;
-		Texture2D titleScreen, introScreen;
+		Texture2D titleScreen, introScreen, scoreScreen;
 		Song music;
 		SpriteFont font;
 		int score;
@@ -166,6 +166,7 @@ namespace WindowsGame1
 			music = Content.Load<Song>("OFalconer-80sSciFi");
 			titleScreen = Content.Load<Texture2D>("title.png");
 			introScreen = Content.Load<Texture2D>("intro_screen.png");
+            scoreScreen = Content.Load<Texture2D>("score_screen.png");
 			//audioSys.loadNSF("Content/cv3.nsf");
 			//audioSys.play();
 		}
@@ -347,9 +348,22 @@ namespace WindowsGame1
 			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
 		}
 
-		public void gameplayDraw(GameTime gameTime)
+		public void clearBuffers()
+        {
+            int target = 0;
+            foreach (Layer layer in gameData.layers)
+            {
+                graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+                GraphicsDevice.Clear(Color.Transparent);
+            }
+
+            graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+            GraphicsDevice.Clear(Color.Transparent);
+            graphics.GraphicsDevice.SetRenderTarget(null);
+        }
+        public void gameplayDraw(GameTime gameTime)
 		{
-			//walk through and draw all layers
+            //walk through and draw all layers
 			int target = 0;
 			foreach (Layer layer in gameData.layers)
 			{
@@ -370,6 +384,7 @@ namespace WindowsGame1
 
 		public void introDraw(GameTime gameTime)
 		{
+            clearBuffers();
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
 			spriteBatch.Draw(introScreen, new Rectangle(0, 0, 1024, 960), Color.White);
 			spriteBatch.End();
@@ -377,11 +392,16 @@ namespace WindowsGame1
 
 		public void scoresDraw(GameTime gameTime)
 		{
+            clearBuffers();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
+            spriteBatch.Draw(scoreScreen, new Rectangle(0, 0, 1024, 960), Color.White);
+            spriteBatch.End();
 			
 		}
 
 		public void splashDraw(GameTime gameTime)
 		{
+            clearBuffers();
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
 			spriteBatch.Draw(titleScreen, new Rectangle(0, 0, 1024, 960), Color.White);
 			spriteBatch.End();
