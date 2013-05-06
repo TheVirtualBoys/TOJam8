@@ -92,13 +92,13 @@
     </animation>
 
     <animation loopCount="0" name="p1_die">
-      <frame frameTime="33">
+      <frame frameTime="500">
         <component tileset="PlayerSprites" left="0" top="0">7</component>
       </frame>
-      <frame frameTime="33">
+      <frame frameTime="750">
         <component tileset="PlayerSprites" left="0" top="0">8</component>
       </frame>
-      <frame frameTime="33">
+      <frame frameTime="1250">
         <component tileset="PlayerSprites" left="0" top="0">9</component>
       </frame>
     </animation>
@@ -140,13 +140,13 @@
     </animation>
 
     <animation loopCount="0" name="p2_die">
-      <frame frameTime="33">
+      <frame frameTime="500">
         <component tileset="PlayerSprites" left="0" top="0">17</component>
       </frame>
-      <frame frameTime="33">
+      <frame frameTime="750">
         <component tileset="PlayerSprites" left="0" top="0">18</component>
       </frame>
-      <frame frameTime="33">
+      <frame frameTime="1250">
         <component tileset="PlayerSprites" left="0" top="0">19</component>
       </frame>
     </animation>
