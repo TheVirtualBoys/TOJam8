@@ -350,7 +350,7 @@ namespace WindowsGame1
                 m_acceleration.X = 0;
             }
 
-			if ((Game1.keyPressed(Keys.Space) && playerType == PlayerType.Player1 || Game1.keyPressed(Keys.Enter) && playerType == PlayerType.Player2) && m_jumpAccelTime < 0.20)
+			if ((Game1.keyPressed(Keys.N) && playerType == PlayerType.Player1 || Game1.keyPressed(Keys.Z) && playerType == PlayerType.Player2) && m_jumpAccelTime < 0.20)
             {
                 //not quite right yet...need non-linear acceleration applied over the jump window.
                 //instant acceleration
@@ -364,9 +364,10 @@ namespace WindowsGame1
                 /*if ( m_traction )*/ m_jumpAccelTime = 0.0; //re-enable jump when on ground
             }
 
-			if (Game1.keyPressed(Keys.F))
+			if ((Game1.keyPressed(Keys.M) && playerType == PlayerType.Player1) || (Game1.keyPressed(Keys.X) && playerType == PlayerType.Player2))
 			{
 				fireProjectile();
+				Game1.playSFX(AudioSys.Effect.SFX_RELEASE);
 			}
 		}
 

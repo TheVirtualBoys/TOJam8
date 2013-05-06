@@ -147,7 +147,7 @@ namespace SfxrSynth
 			if (r.NextDouble() < 0.5) hpFilterCutoffSweep += r.NextDouble() * mutation * 2 - mutation;
 			if (r.NextDouble() < 0.5) PhaserOffset += r.NextDouble() * mutation * 2 - mutation;
 			if (r.NextDouble() < 0.5) PhaserSweep += r.NextDouble() * mutation * 2 - mutation;
-			if (r.NextDouble() < 0.5) RepeatSpeed += r.NextDouble() * mutation * 2 - mutation;
+			//if (r.NextDouble() < 0.5) RepeatSpeed += r.NextDouble() * mutation * 2 - mutation;
 			if (r.NextDouble() < 0.5) ChangeSpeed += r.NextDouble() * mutation * 2 - mutation;
 			if (r.NextDouble() < 0.5) ChangeAmount += r.NextDouble() * mutation * 2 - mutation;
 		}
