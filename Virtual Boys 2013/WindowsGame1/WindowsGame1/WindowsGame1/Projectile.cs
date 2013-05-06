@@ -167,10 +167,18 @@ namespace WindowsGame1
 			//TODO:
 		}
 
+		//FIXME: this doesn't work right now
 		private bool collidesWithPlayer()
 		{
-			//TODO:
-			return false;
+			//TODO: 
+			//get image rect
+			Rectangle projectileImgRect = Game1.Instance.gameData.getTileSet("orbs").coords[0];
+
+			//get other player rect
+			PhysicsSprite oPlayer = getOtherPlayer();
+			Rectangle playerRect = new Rectangle(oPlayer.Left, oPlayer.Top, oPlayer.Width, oPlayer.Height);
+
+			return projectileImgRect.Intersects(playerRect);
 		}
 
 		private int Left

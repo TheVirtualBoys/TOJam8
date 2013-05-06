@@ -388,5 +388,15 @@ namespace WindowsGame1
         /*                            int trueIndex = getMapDataTrueIndex(mapData, row, col);
                      int boundFlags = (int)tileSet.bounds[trueIndex];
  */
+
+		public int Width
+		{
+			get { return width; }
+		}
+
+		public int Height
+		{
+			get { return height; }
+		}
     }
 }
