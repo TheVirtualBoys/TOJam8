@@ -373,8 +373,16 @@ namespace WindowsGame1
 
 		private void fireProjectile()
 		{
-			Projectile fireball = new Projectile(m_position.X, m_position.Y, m_velocity.X, m_velocity.Y, PlayerId, PlayerGlowType);
-			Game1.Instance.gameData.projectiles.Add(fireball);
+			double velX = m_velocity.X;
+			double velY = m_velocity.Y;
+
+			velX = 500;
+
+			if (velX != 0 && velY != 0)
+			{
+				Projectile fireball = new Projectile(m_position.X, m_position.Y, velX, velY, PlayerId, PlayerGlowType);
+				Game1.Instance.gameData.projectiles.Add(fireball);
+			}
 		}
 
         /*                            int trueIndex = getMapDataTrueIndex(mapData, row, col);

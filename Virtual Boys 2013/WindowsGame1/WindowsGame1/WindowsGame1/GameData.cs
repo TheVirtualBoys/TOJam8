@@ -52,6 +52,7 @@ namespace WindowsGame1
 		public List<Layer> layers = new List<Layer>();
 
 		public List<Projectile> projectiles = new List<Projectile>();
+		public List<Projectile> projectilesToRemove = new List<Projectile>();
 
 		/**
 		 * A map of all the loaded textures. asset name -> texture

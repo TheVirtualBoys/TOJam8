@@ -266,6 +266,11 @@ namespace WindowsGame1
 				layer.Update(gameTime);
 			}
 
+			foreach (Projectile projectile in gameData.projectilesToRemove)
+			{
+				gameData.projectiles.Remove(projectile);
+			}
+			gameData.projectilesToRemove.Clear();
 		}
 
 		public void introUpdate(GameTime gameTime)
