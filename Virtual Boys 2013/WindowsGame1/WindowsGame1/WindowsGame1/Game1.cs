@@ -18,7 +18,7 @@ namespace WindowsGame1
 	/// </summary>
 	public class Game1 : Microsoft.Xna.Framework.Game
 	{
-		AudioSys				audioSys;
+		static AudioSys				audioSys;
 		public GameData				gameData;
 		GraphicsDeviceManager	graphics;
 		SpriteBatch				spriteBatch;
@@ -71,6 +71,11 @@ namespace WindowsGame1
 			Content.RootDirectory = "Content";
 			audioSys = new AudioSys();
 			gameData = new GameData();
+		}
+
+		public static void playSFX(AudioSys.Effect effect)
+		{
+			audioSys.playSFX(effect);
 		}
 
 		/// <summary>

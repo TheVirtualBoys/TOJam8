@@ -350,26 +350,25 @@ namespace WindowsGame1
                 m_acceleration.X = 0;
             }
 
-            if ( keyboard.IsKeyDown(Keys.Space) && m_jumpAccelTime < 0.20 )
+			if ((Game1.keyPressed(Keys.Space) && playerType == PlayerType.Player1 || Game1.keyPressed(Keys.Enter) && playerType == PlayerType.Player2) && m_jumpAccelTime < 0.20)
             {
                 //not quite right yet...need non-linear acceleration applied over the jump window.
                 //instant acceleration
                 m_velocity.Y = -400;
                 m_jumpAccelTime += m_lastDelta;
-            } 
-            else 
+				Game1.playSFX(AudioSys.Effect.SFX_JUMP);
+            }
+			else
             {
                 m_acceleration.Y = 1500;
                 /*if ( m_traction )*/ m_jumpAccelTime = 0.0; //re-enable jump when on ground
             }
 
-			if (keyboard.IsKeyDown(Keys.F) && !oldKeyboard.IsKeyDown(Keys.F))
+			if (Game1.keyPressed(Keys.F))
 			{
 				fireProjectile();
 			}
-
-			oldKeyboard = keyboard;
-        }
+		}
 
 		private void fireProjectile()
 		{
