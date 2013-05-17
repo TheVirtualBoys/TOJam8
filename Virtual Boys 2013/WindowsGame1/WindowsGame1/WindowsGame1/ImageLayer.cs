@@ -59,7 +59,7 @@ namespace WindowsGame1
 			fixedYOffset = 0;
 		}
 
-		public override void Update(GameTime gameTime)
+		public override int Update(GameTime gameTime)
 		{
 			//add up the speed into an accumulator (takes account for fractional speeds
 			pixelShiftSizeAccumulator += pxPerFrameSpeed;
@@ -71,6 +71,7 @@ namespace WindowsGame1
 			xOffset += pxShiftSize;
 
 			xOffset %= tileSet.coords[imageIndex].Width;
+			return 0;
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

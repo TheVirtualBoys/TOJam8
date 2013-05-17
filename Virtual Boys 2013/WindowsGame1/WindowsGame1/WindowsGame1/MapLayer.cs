@@ -47,6 +47,11 @@ namespace WindowsGame1
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
 
+			this.reset();
+		}
+
+		public void reset()
+		{
 			numScreenTilesWide = 16;//gameData.ScreenWidth / tileWidth;
 			numScreenTilesHigh = 15;//gameData.ScreenHeight / tileHeight;
 
@@ -55,9 +60,11 @@ namespace WindowsGame1
 
 			pxPerFrameSpeed = 0;
 			pixelShiftSizeAccumulator = 0;
+			tileOffset = 0;
+			setSpeed(2.25);
 		}
 
-		public override void Update(GameTime gameTime)
+		public override int Update(GameTime gameTime)
 		{
 			//add up the speed into an accumulator (takes account for fractional speeds
 			pixelShiftSizeAccumulator += pxPerFrameSpeed;
@@ -67,7 +74,7 @@ namespace WindowsGame1
 			pixelShiftSizeAccumulator -= pxShiftSize;
 
 			//moves the map by 'pxShiftSize' pixels
-			moveRightByPixels(pxShiftSize);
+			return moveRightByPixels(pxShiftSize);
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -104,10 +111,10 @@ namespace WindowsGame1
 			return pxPerFrameSpeed;
 		}
 
-		public void moveRightByPixels(int numPixels)
+		public int moveRightByPixels(int numPixels)
 		{
 			if (numPixels <= 0)
-				return;
+				return 0;
 
 			pixelOffset += numPixels;
 
@@ -118,12 +125,13 @@ namespace WindowsGame1
 
 				moveRightByTiles(numTiles);
 			}
+			return (int)Math.Floor(numPixels/2.0);
 		}
 
-		public void moveRightByTiles(int numTiles)
+		public bool moveRightByTiles(int numTiles)
 		{
 			if (numTiles <= 0)
-				return;
+				return false;
 
 			tileOffset += numTiles;
 
@@ -133,7 +141,9 @@ namespace WindowsGame1
 				tileOffset -= gameData.maps[firstMap].width;
 				firstMap = secondMap;
 				secondMap = getNextMap();
+				return true;
 			}
+			return false;
 		}
 
 		public Map getMapData(int screenRow, int screenCol)
@@ -142,11 +152,11 @@ namespace WindowsGame1
 			return (index >= 0) ? gameData.maps[index] : null;
 		}
 
-        public Map getAbsoluteMapData(int screenRow, int screenCol)
-        {
-            int index = getMapDataIndex(screenRow, screenCol - tileOffset);
-            return (index >= 0) ? gameData.maps[index] : null;
-        }
+		public Map getAbsoluteMapData(int screenRow, int screenCol)
+		{
+			int index = getMapDataIndex(screenRow, screenCol - tileOffset);
+			return (index >= 0) ? gameData.maps[index] : null;
+		}
 
 		public int getMapDataIndex(int screenRow, int screenCol)
 		{
@@ -192,8 +202,8 @@ namespace WindowsGame1
 			//get the tile position for the pixel coords
 			int row, col;
 			convertScreenPxToTile(px, py, out row, out col);
-            row %= mapData.height;
-            col %= mapData.width;
+			row %= mapData.height;
+			col %= mapData.width;
 
 			//get the bounds for the tile
 			int tileTypeIndex = mapData.data[row][col];

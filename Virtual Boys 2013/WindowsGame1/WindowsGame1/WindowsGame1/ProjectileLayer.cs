@@ -16,13 +16,14 @@ namespace WindowsGame1
 			this.gameData = gameData;
 		}
 
-		public override void Update(GameTime gameTime)
+		public override int Update(GameTime gameTime)
 		{
 			//walk through all the projectiles and update them
 			foreach (Projectile projectile in gameData.projectiles)
 			{
 				projectile.update(gameTime);
 			}
+			return 0;
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

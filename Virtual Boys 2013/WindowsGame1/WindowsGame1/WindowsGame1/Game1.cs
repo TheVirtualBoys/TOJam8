@@ -38,6 +38,20 @@ namespace WindowsGame1
 		private State state;
 		public void setState(State newState)
 		{
+			switch (state) {
+				case State.STATE_GAMEPLAY:
+					// reset the map and player data
+					player1.reset();
+					player2.reset();
+					mapLayer.reset();
+					mapLayer.setSpeed(2.25);
+				break;
+				case State.STATE_SCORES:
+					score = 0;
+				break;
+				default:
+				break;
+			}
 			state = newState;
 			foreach (RenderTarget2D tex in renderTarget) {
 					//graphics.GraphicsDevice.SetRenderTarget(tex);
@@ -87,9 +101,9 @@ namespace WindowsGame1
 		protected override void Initialize()
 		{
 			// TODO: Add your initialization logic here
+			base.Initialize();
 			audioSys.init();
 			gameData.init(Content);
-			base.Initialize();
 
 			gameData.ScreenWidth = 256;
 			gameData.ScreenHeight = 240;
@@ -171,7 +185,7 @@ namespace WindowsGame1
 			music = Content.Load<Song>("OFalconer-80sSciFi");
 			titleScreen = Content.Load<Texture2D>("title.png");
 			introScreen = Content.Load<Texture2D>("intro_screen.png");
-            scoreScreen = Content.Load<Texture2D>("score_screen.png");
+			scoreScreen = Content.Load<Texture2D>("score_screen.png");
 			//audioSys.loadNSF("Content/cv3.nsf");
 			//audioSys.play();
 		}
@@ -269,7 +283,7 @@ namespace WindowsGame1
 			//walk through and update all layers
 			foreach (Layer layer in gameData.layers)
 			{
-				layer.Update(gameTime);
+				this.score += layer.Update(gameTime);
 			}
 
 			foreach (Projectile projectile in gameData.projectilesToRemove)
@@ -339,36 +353,36 @@ namespace WindowsGame1
 
 		public void introInput()
 		{
-			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
+			if (keyPressed(Keys.Enter) || keyPressed(Keys.Z) || keyPressed(Keys.N) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_GAMEPLAY);
 		}
 
 		public void scoresInput()
 		{
 			// wait for any input, then return to intro state
-			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
+			if (keyPressed(Keys.Enter) || keyPressed(Keys.Z) || keyPressed(Keys.N) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_SPLASH);
 		}
 
 		public void splashInput()
 		{
-			if (keyPressed(Keys.Enter) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
+			if (keyPressed(Keys.Enter) || keyPressed(Keys.Z) || keyPressed(Keys.N) || keyPressed(0, Buttons.Start) || keyPressed(1, Buttons.Start) || keyPressed(0, Buttons.A) || keyPressed(1, Buttons.A)) setState(State.STATE_INTRO);
 		}
 
 		public void clearBuffers()
-        {
-            int target = 0;
-            foreach (Layer layer in gameData.layers)
-            {
-                graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
-                GraphicsDevice.Clear(Color.Transparent);
-            }
-
-            graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
-            GraphicsDevice.Clear(Color.Transparent);
-            graphics.GraphicsDevice.SetRenderTarget(null);
-        }
-        public void gameplayDraw(GameTime gameTime)
 		{
-            //walk through and draw all layers
+			int target = 0;
+			foreach (Layer layer in gameData.layers)
+			{
+				graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+				GraphicsDevice.Clear(Color.Transparent);
+			}
+
+			graphics.GraphicsDevice.SetRenderTarget(renderTarget[target++]);
+			GraphicsDevice.Clear(Color.Transparent);
+			graphics.GraphicsDevice.SetRenderTarget(null);
+		}
+		public void gameplayDraw(GameTime gameTime)
+		{
+			//walk through and draw all layers
 			int target = 0;
 			foreach (Layer layer in gameData.layers)
 			{
@@ -389,7 +403,7 @@ namespace WindowsGame1
 
 		public void introDraw(GameTime gameTime)
 		{
-            clearBuffers();
+			clearBuffers();
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
 			spriteBatch.Draw(introScreen, new Rectangle(0, 0, 1024, 960), Color.White);
 			spriteBatch.End();
@@ -397,16 +411,16 @@ namespace WindowsGame1
 
 		public void scoresDraw(GameTime gameTime)
 		{
-            clearBuffers();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
-            spriteBatch.Draw(scoreScreen, new Rectangle(0, 0, 1024, 960), Color.White);
-            spriteBatch.End();
-			
+			clearBuffers();
+			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
+			spriteBatch.Draw(scoreScreen, new Rectangle(0, 0, 1024, 960), Color.White);
+			spriteBatch.DrawString(font, score.ToString(), new Vector2(512, 480), Color.White);
+			spriteBatch.End();
 		}
 
 		public void splashDraw(GameTime gameTime)
 		{
-            clearBuffers();
+			clearBuffers();
 			spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
 			spriteBatch.Draw(titleScreen, new Rectangle(0, 0, 1024, 960), Color.White);
 			spriteBatch.End();
@@ -458,44 +472,44 @@ namespace WindowsGame1
 				bounds = mapLayer.getMapTileBounds(x0, y0, mapData, tileSet);				
 				if (bounds != TileSet.Bounds.BOUNDS_NONE)	//found a collision bounds so return
 				{
-                    if ((bounds & TileSet.Bounds.BOUNDS_SLASH) == TileSet.Bounds.BOUNDS_SLASH)
-                    {
-                        //tiles are all offset leftward by pixelOffset pixels from being screen aligned
-                        //slash tile's top left origin is then 
-                        Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
-                        //top left tri is clear, bot right tri is hit
-                        int subTileY = y0 - (int)boundOrigin.Y;
-                        int subTileX = x0 - (int)boundOrigin.X;
-                        int subSum = subTileY + subTileX;
-                        if (subSum > 15)
-                        {
-                            boundsX = x0;
-                            boundsY = y0;
-                            break;
-                        }
-                    }
-                    else if ((bounds & TileSet.Bounds.BOUNDS_BSLASH) == TileSet.Bounds.BOUNDS_BSLASH)
-                    {
-                        //tiles are all offset leftward by pixelOffset pixels from being screen aligned
-                        //slash tile's top left origin is then 
-                        Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
-                        //top left tri is clear, bot right tri is hit
-                        int subTileY = y0 - (int)boundOrigin.Y;
-                        int subTileX = x0 - (int)boundOrigin.X;
-                        int subSum = subTileY + subTileX;
-                        if (subSum < 15)
-                        {
-                            boundsX = x0;
-                            boundsY = y0;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        boundsX = x0;
-                        boundsY = y0;
-                        break;
-                    }
+					if ((bounds & TileSet.Bounds.BOUNDS_SLASH) == TileSet.Bounds.BOUNDS_SLASH)
+					{
+						//tiles are all offset leftward by pixelOffset pixels from being screen aligned
+						//slash tile's top left origin is then 
+						Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
+						//top left tri is clear, bot right tri is hit
+						int subTileY = y0 - (int)boundOrigin.Y;
+						int subTileX = x0 - (int)boundOrigin.X;
+						int subSum = subTileY + subTileX;
+						if (subSum > 15)
+						{
+							boundsX = x0;
+							boundsY = y0;
+							break;
+						}
+					}
+					else if ((bounds & TileSet.Bounds.BOUNDS_BSLASH) == TileSet.Bounds.BOUNDS_BSLASH)
+					{
+						//tiles are all offset leftward by pixelOffset pixels from being screen aligned
+						//slash tile's top left origin is then 
+						Vector2 boundOrigin = new Vector2((col - mapLayer.tileOffset) * 16 - mapLayer.pixelOffset, row * 16);
+						//top left tri is clear, bot right tri is hit
+						int subTileY = y0 - (int)boundOrigin.Y;
+						int subTileX = x0 - (int)boundOrigin.X;
+						int subSum = subTileY + subTileX;
+						if (subSum < 15)
+						{
+							boundsX = x0;
+							boundsY = y0;
+							break;
+						}
+					}
+					else
+					{
+						boundsX = x0;
+						boundsY = y0;
+						break;
+					}
 				}
 
 				if (x0 == x1 && y0 == y1)

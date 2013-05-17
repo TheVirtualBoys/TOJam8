@@ -115,7 +115,7 @@ namespace WindowsGame1
 			reset();
 		}
 
-		public override void Update(GameTime gameTime)
+		public override int Update(GameTime gameTime)
 		{
 			if (msLeftBeforeShow > 0)
 			{
@@ -147,7 +147,7 @@ namespace WindowsGame1
 					}
 				}
 			}
-
+			return 0;
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
